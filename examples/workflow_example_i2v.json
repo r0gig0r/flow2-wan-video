@@ -13,7 +13,7 @@
       ],
       "size": [
         300,
-        334
+        628
       ],
       "flags": {},
       "order": 8,
@@ -78,13 +78,13 @@
           "hidden": false,
           "paused": false,
           "params": {
-            "filename": "Wan_00142.mp4",
+            "filename": "Wan_00002.mp4",
             "subfolder": "",
             "type": "output",
             "format": "video/h264-mp4",
             "frame_rate": 16,
-            "workflow": "Wan_00142.png",
-            "fullpath": "D:\\ai\\ComfyUI_windows_portable\\ComfyUI\\output\\Wan_00142.mp4"
+            "workflow": "Wan_00002.png",
+            "fullpath": "D:\\ai\\ComfyUI_windows_portable\\ComfyUI\\output\\Wan_00002.mp4"
           }
         }
       },
@@ -130,6 +130,8 @@
         }
       ],
       "properties": {
+        "cnr_id": "flow2-wan-video",
+        "ver": "b5ffeebe8f4b9b30eae070698679fb184399e3e2",
         "Node name for S&R": "WanVideoEnhancer_F2"
       },
       "widgets_values": [
@@ -171,6 +173,8 @@
         }
       ],
       "properties": {
+        "cnr_id": "flow2-wan-video",
+        "ver": "b5ffeebe8f4b9b30eae070698679fb184399e3e2",
         "Node name for S&R": "WanVideoModelLoader_F2"
       },
       "widgets_values": [
@@ -181,55 +185,6 @@
         1,
         "disabled",
         1
-      ],
-      "color": "#323",
-      "bgcolor": "#535",
-      "shape": 1
-    },
-    {
-      "id": 411,
-      "type": "WanVideoModelPatcher_F2",
-      "pos": [
-        -3320,
-        -3240
-      ],
-      "size": [
-        320,
-        130
-      ],
-      "flags": {
-        "collapsed": false
-      },
-      "order": 3,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "model",
-          "type": "MODEL",
-          "link": 885
-        },
-        {
-          "name": "patch",
-          "type": "PATCH",
-          "link": 891
-        }
-      ],
-      "outputs": [
-        {
-          "name": "model",
-          "type": "MODEL",
-          "links": [
-            887
-          ]
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "WanVideoModelPatcher_F2"
-      },
-      "widgets_values": [
-        "triton",
-        "retention",
-        "disabled"
       ],
       "color": "#323",
       "bgcolor": "#535",
@@ -282,6 +237,8 @@
         }
       ],
       "properties": {
+        "cnr_id": "flow2-wan-video",
+        "ver": "b5ffeebe8f4b9b30eae070698679fb184399e3e2",
         "Node name for S&R": "WanVideoSampler_F2"
       },
       "widgets_values": [
@@ -301,68 +258,6 @@
       "shape": 1
     },
     {
-      "id": 414,
-      "type": "WanVideoConfigure_F2",
-      "pos": [
-        -3730,
-        -3050
-      ],
-      "size": [
-        390,
-        540
-      ],
-      "flags": {},
-      "order": 1,
-      "mode": 0,
-      "showAdvanced": true,
-      "inputs": [],
-      "outputs": [
-        {
-          "name": "patch",
-          "type": "PATCH",
-          "links": [
-            891
-          ]
-        },
-        {
-          "name": "width",
-          "type": "NUMBER",
-          "links": [
-            892
-          ]
-        },
-        {
-          "name": "height",
-          "type": "NUMBER",
-          "links": [
-            893
-          ]
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "WanVideoConfigure_F2"
-      },
-      "widgets_values": [
-        "cat eats hamburger",
-        "Overexposed, bright colors, static, blurred details, subtitles, picture, still picture, painting, overall gray, worst quality, low quality, JPEG compression residue, incomplete, extra fingers, poorly drawn hands, poorly drawn faces, deformed, mutation, disfigured, malformed limbs, fused fingers, cluttered background, three legs, walking backwards, camera flash",
-        400,
-        512,
-        3,
-        6,
-        6,
-        20,
-        1,
-        0,
-        "disabled",
-        "disabled",
-        0.20000000000000004,
-        0.8
-      ],
-      "color": "#2a363b",
-      "bgcolor": "#3f5159",
-      "shape": 1
-    },
-    {
       "id": 262,
       "type": "Note",
       "pos": [
@@ -374,7 +269,7 @@
         500
       ],
       "flags": {},
-      "order": 2,
+      "order": 1,
       "mode": 0,
       "inputs": [],
       "outputs": [],
@@ -432,6 +327,8 @@
         }
       ],
       "properties": {
+        "cnr_id": "flow2-wan-video",
+        "ver": "b5ffeebe8f4b9b30eae070698679fb184399e3e2",
         "Node name for S&R": "ResizeImage_F2"
       },
       "widgets_values": [
@@ -459,7 +356,7 @@
       ],
       "size": [
         310,
-        334
+        638
       ],
       "flags": {},
       "order": 6,
@@ -516,16 +413,131 @@
           "hidden": false,
           "paused": false,
           "params": {
-            "filename": "Wan_00141.mp4",
+            "filename": "Wan_00001.mp4",
             "subfolder": "",
             "type": "output",
             "format": "video/h264-mp4",
             "frame_rate": 16,
-            "workflow": "Wan_00141.png",
-            "fullpath": "D:\\ai\\ComfyUI_windows_portable\\ComfyUI\\output\\Wan_00141.mp4"
+            "workflow": "Wan_00001.png",
+            "fullpath": "D:\\ai\\ComfyUI_windows_portable\\ComfyUI\\output\\Wan_00001.mp4"
           }
         }
       },
+      "color": "#2a363b",
+      "bgcolor": "#3f5159",
+      "shape": 1
+    },
+    {
+      "id": 411,
+      "type": "WanVideoModelPatcher_F2",
+      "pos": [
+        -3320,
+        -3240
+      ],
+      "size": [
+        320,
+        130
+      ],
+      "flags": {
+        "collapsed": false
+      },
+      "order": 3,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 885
+        },
+        {
+          "name": "patch",
+          "type": "PATCH",
+          "link": 891
+        }
+      ],
+      "outputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "links": [
+            887
+          ]
+        }
+      ],
+      "properties": {
+        "cnr_id": "flow2-wan-video",
+        "ver": "b5ffeebe8f4b9b30eae070698679fb184399e3e2",
+        "Node name for S&R": "WanVideoModelPatcher_F2"
+      },
+      "widgets_values": [
+        "triton",
+        "retention",
+        "disabled"
+      ],
+      "color": "#323",
+      "bgcolor": "#535",
+      "shape": 1
+    },
+    {
+      "id": 414,
+      "type": "WanVideoConfigure_F2",
+      "pos": [
+        -3730,
+        -3050
+      ],
+      "size": [
+        390,
+        540
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "showAdvanced": true,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "patch",
+          "type": "PATCH",
+          "links": [
+            891
+          ]
+        },
+        {
+          "name": "width",
+          "type": "NUMBER",
+          "links": [
+            892
+          ]
+        },
+        {
+          "name": "height",
+          "type": "NUMBER",
+          "links": [
+            893
+          ]
+        }
+      ],
+      "properties": {
+        "cnr_id": "flow2-wan-video",
+        "ver": "b5ffeebe8f4b9b30eae070698679fb184399e3e2",
+        "Node name for S&R": "WanVideoConfigure_F2"
+      },
+      "widgets_values": [
+        "cat eats hamburger",
+        "Overexposed, bright colors, static, blurred details, subtitles, picture, still picture, painting, overall gray, worst quality, low quality, JPEG compression residue, incomplete, extra fingers, poorly drawn hands, poorly drawn faces, deformed, mutation, disfigured, malformed limbs, fused fingers, cluttered background, three legs, walking backwards, camera flash",
+        400,
+        400,
+        3,
+        6,
+        6,
+        20,
+        1,
+        0,
+        "disabled",
+        "disabled",
+        0.20000000000000004,
+        0.8
+      ],
       "color": "#2a363b",
       "bgcolor": "#3f5159",
       "shape": 1
@@ -644,10 +656,10 @@
   "config": {},
   "extra": {
     "ds": {
-      "scale": 0.8390545288824276,
+      "scale": 1.0251896724890832,
       "offset": [
-        4099.58297270691,
-        3443.217497405734
+        4033.5601759812744,
+        3422.039428746259
       ]
     },
     "VHS_latentpreview": true,
