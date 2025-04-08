@@ -1,0 +1,15 @@
+[project]
+name = "flow2-wan-video"
+description = "Simple wan-video wrapper."
+version = "1.0.0"
+license = {file = "LICENSE"}
+dependencies = []
+
+[project.urls]
+Repository = "https://github.com/Flow-two/flow2-wan-video"
+#  Used by Comfy Registry https://comfyregistry.org
+
+[tool.comfy]
+PublisherId = "flow2"
+DisplayName = "flow2-wan-video"
+Icon = ""
