@@ -371,7 +371,7 @@ class WanVideoModelPatcher_F2:
             patch_model_order()
             self.patched_order = True
 
-        if compile_model != "none":
+        if compile_model != "disabled":
             compile_settings = {
                 "fullgraph": False,
                 "dynamic": False,
