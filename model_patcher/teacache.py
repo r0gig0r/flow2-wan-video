@@ -132,8 +132,7 @@ def teacache_wanmodel_forward(
     cond_or_uncond = transformer_options.get("cond_or_uncond")
     use_ret_mode = transformer_options.get("use_ret_mode")
     enable_teacache = transformer_options.get("enable_teacache", True)
-
-    print("enable_teacache:", enable_teacache)
+    
 
     # embeddings
     x = self.patch_embedding(x.float()).to(x.dtype)
