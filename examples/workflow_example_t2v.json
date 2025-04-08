@@ -101,7 +101,7 @@
         "Node name for S&R": "WanVideoSampler_F2"
       },
       "widgets_values": [
-        1000465258989037,
+        244924375327735,
         "randomize",
         "uni_pc",
         "sgm_uniform",
@@ -112,86 +112,6 @@
         false,
         ""
       ],
-      "color": "#2a363b",
-      "bgcolor": "#3f5159",
-      "shape": 1
-    },
-    {
-      "id": 321,
-      "type": "VHS_VideoCombine",
-      "pos": [
-        -3010,
-        -3050
-      ],
-      "size": [
-        310,
-        638
-      ],
-      "flags": {},
-      "order": 4,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "images",
-          "type": "IMAGE",
-          "link": 894
-        },
-        {
-          "name": "audio",
-          "shape": 7,
-          "type": "AUDIO",
-          "link": null
-        },
-        {
-          "name": "meta_batch",
-          "shape": 7,
-          "type": "VHS_BatchManager",
-          "link": null
-        },
-        {
-          "name": "vae",
-          "shape": 7,
-          "type": "VAE",
-          "link": null
-        }
-      ],
-      "outputs": [
-        {
-          "name": "Filenames",
-          "type": "VHS_FILENAMES",
-          "links": null
-        }
-      ],
-      "properties": {
-        "cnr_id": "comfyui-videohelpersuite",
-        "ver": "972c87da577b47211c4e9aeed30dc38c7bae607f",
-        "Node name for S&R": "VHS_VideoCombine"
-      },
-      "widgets_values": {
-        "frame_rate": 16,
-        "loop_count": 0,
-        "filename_prefix": "Wan/",
-        "format": "video/h264-mp4",
-        "pix_fmt": "yuv420p",
-        "crf": 19,
-        "save_metadata": false,
-        "trim_to_audio": false,
-        "pingpong": false,
-        "save_output": true,
-        "videopreview": {
-          "hidden": false,
-          "paused": false,
-          "params": {
-            "filename": "Wan_00001.mp4",
-            "subfolder": "",
-            "type": "output",
-            "format": "video/h264-mp4",
-            "frame_rate": 16,
-            "workflow": "Wan_00001.png",
-            "fullpath": "D:\\ai\\ComfyUI_windows_portable\\ComfyUI\\output\\Wan_00001.mp4"
-          }
-        }
-      },
       "color": "#2a363b",
       "bgcolor": "#3f5159",
       "shape": 1
@@ -270,13 +190,13 @@
           "hidden": false,
           "paused": false,
           "params": {
-            "filename": "Wan_00002.mp4",
+            "filename": "Wan_00006.mp4",
             "subfolder": "",
             "type": "output",
             "format": "video/h264-mp4",
             "frame_rate": 16,
-            "workflow": "Wan_00002.png",
-            "fullpath": "D:\\ai\\ComfyUI_windows_portable\\ComfyUI\\output\\Wan_00002.mp4"
+            "workflow": "Wan_00006.png",
+            "fullpath": "D:\\ai\\ComfyUI_windows_portable\\ComfyUI\\output\\Wan_00006.mp4"
           }
         }
       },
@@ -433,11 +353,11 @@
       "widgets_values": [
         "cat eats hamburger",
         "Overexposed, bright colors, static, blurred details, subtitles, picture, still picture, painting, overall gray, worst quality, low quality, JPEG compression residue, incomplete, extra fingers, poorly drawn hands, poorly drawn faces, deformed, mutation, disfigured, malformed limbs, fused fingers, cluttered background, three legs, walking backwards, camera flash",
-        400,
-        400,
+        512,
+        512,
         3,
-        5,
-        5,
+        6,
+        6,
         30,
         1,
         0,
@@ -446,6 +366,86 @@
         0.20000000000000004,
         0.8
       ],
+      "color": "#2a363b",
+      "bgcolor": "#3f5159",
+      "shape": 1
+    },
+    {
+      "id": 321,
+      "type": "VHS_VideoCombine",
+      "pos": [
+        -3010,
+        -3050
+      ],
+      "size": [
+        310,
+        638
+      ],
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 894
+        },
+        {
+          "name": "audio",
+          "shape": 7,
+          "type": "AUDIO",
+          "link": null
+        },
+        {
+          "name": "meta_batch",
+          "shape": 7,
+          "type": "VHS_BatchManager",
+          "link": null
+        },
+        {
+          "name": "vae",
+          "shape": 7,
+          "type": "VAE",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "Filenames",
+          "type": "VHS_FILENAMES",
+          "links": null
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfyui-videohelpersuite",
+        "ver": "972c87da577b47211c4e9aeed30dc38c7bae607f",
+        "Node name for S&R": "VHS_VideoCombine"
+      },
+      "widgets_values": {
+        "frame_rate": 16,
+        "loop_count": 0,
+        "filename_prefix": "Wan/",
+        "format": "video/h264-mp4",
+        "pix_fmt": "yuv420p",
+        "crf": 19,
+        "save_metadata": false,
+        "trim_to_audio": false,
+        "pingpong": false,
+        "save_output": true,
+        "videopreview": {
+          "hidden": false,
+          "paused": false,
+          "params": {
+            "filename": "Wan_00005.mp4",
+            "subfolder": "",
+            "type": "output",
+            "format": "video/h264-mp4",
+            "frame_rate": 16,
+            "workflow": "Wan_00005.png",
+            "fullpath": "D:\\ai\\ComfyUI_windows_portable\\ComfyUI\\output\\Wan_00005.mp4"
+          }
+        }
+      },
       "color": "#2a363b",
       "bgcolor": "#3f5159",
       "shape": 1
@@ -540,10 +540,10 @@
   "config": {},
   "extra": {
     "ds": {
-      "scale": 0.9319906113537137,
+      "scale": 1.0251896724890852,
       "offset": [
-        3900.544297270581,
-        3514.8246511024013
+        4042.8325881182636,
+        3504.9189275531294
       ]
     },
     "VHS_latentpreview": true,
