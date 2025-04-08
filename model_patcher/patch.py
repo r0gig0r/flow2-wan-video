@@ -100,7 +100,7 @@ def patch_cfg_zero_star(model, zero_init=1):
         current_step_index = find_step_index_percent(sigmas, timestep)[0]
 
         if current_step_index <= zero_init:
-            print(f"\ncurrent cfg zero steps {current_step_index} <= {zero_init}\n")
+            print(f"\ncurrent cfg zero steps {current_step_index} <= {zero_init} only noise will be shown\n")
             return out * 0
         
         alpha = optimized_scale(x - cond_p, x - uncond_p)
