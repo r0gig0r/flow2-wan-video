@@ -24,13 +24,19 @@ os.environ["TRITON_CACHE_DIR"] = triton_cache_dir
 #os.environ["TRITON_AUTOTUNE_FAST"] = "1"
 #os.environ["TORCHINDUCTOR_DISABLE"] = "1"
 
-import torch
-torch._dynamo.config.cache_size_limit = 64
-torch._dynamo.config.recompile_limit = 32
-torch._dynamo.config.suppress_errors = True
 
-torch._inductor.config.verbose_progress = True
-torch._inductor.config.debug = False
+try:
+    import torch
+
+    torch._dynamo.config.cache_size_limit = 64
+    torch._dynamo.config.recompile_limit = 32
+    torch._dynamo.config.suppress_errors = True
+
+    torch._inductor.config.verbose_progress = True
+    torch._inductor.config.debug = False
+except Exception as e:
+    print("error:", e)
+
 
 original_attention = comfy.ldm.modules.attention.optimized_attention
 original_patch_model = comfy.model_patcher.ModelPatcher.patch_model

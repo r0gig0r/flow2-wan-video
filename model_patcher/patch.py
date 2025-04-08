@@ -236,7 +236,15 @@ class CFGGuider2(CFGGuider):
 
     def predict_noise(self, x, timestep, model_options={}, seed=None):
         
-        sigmas = model_options["transformer_options"]["sample_sigmas"]
+        transformer_options = model_options.get("transformer_options", {})
+        if not transformer_options:
+            raise ValueError("transformer_options is empty")
+
+        sigmas = transformer_options["sample_sigmas"]
+
+        if not timestep:
+            raise ValueError("timestep is empty")
+        print(sigmas, timestep)
         current_percent = find_step_index_percent(sigmas, timestep)[1]
         if current_percent <= self.guidance_percent:
             uncond = self.conds.get("negative", None)

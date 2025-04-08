@@ -571,7 +571,7 @@ class WanVideoSampler_F2:
         
         guider = get_cfg_guider2()
         
-        samples = guider.sample(get_random_noise(), latent_image[:-5], sampler, full_sigmas, denoise_mask=noise_mask, callback=preview_callback, disable_pbar=False, seed=seed)
+        samples = guider.sample(get_random_noise(), latent_image, sampler, full_sigmas, denoise_mask=noise_mask, callback=preview_callback, disable_pbar=False, seed=seed)
 
         if denoised_output:
             print("denoising...")
