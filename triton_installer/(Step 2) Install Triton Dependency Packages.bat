@@ -78,7 +78,7 @@ python_embeded\python.exe -s -m pip install -e SageAttention
 echo.
 echo Cloning flow2-wan-video repository...
 echo.
-REM git clone https://github.com/Flow-Two/flow2-wan-video.git ComfyUI\custom_nodes\flow2-wan-video
+git clone https://github.com/Flow-Two/flow2-wan-video.git ComfyUI\custom_nodes\flow2-wan-video
 python_embeded\python.exe -m pip install -r "ComfyUI\custom_nodes\flow2-wan-video\requirements.txt"
 
 echo.
