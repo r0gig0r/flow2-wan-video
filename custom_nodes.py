@@ -330,7 +330,7 @@ class WanVideoConfigure_F2:
             skip_end_percent=skip_end_percent,
         )
 
-        return (width, height, None, )
+        return (None, width, height, )
     
 class WanVideoModelPatcher_F2:
     def __init__(self):
@@ -812,22 +812,36 @@ class ResizeImage_F2:
             _, H, W, _ = image.shape
 
             if keep_proportion == "longest":
-                ratio = W / H
-                if W > H:
-                    width = width
-                    height = round(width * ratio)
-                else:
-                    height = height
-                    width = round(height * ratio)
-            elif keep_proportion == "shortest":
-                ratio = H / W
-                if W > H:
-                    height = height
-                    width = round(height * ratio)
-                else:
-                    width = width
-                    height = round(width * ratio)
 
+                ratio = W / H
+
+                if W > H:
+                    width = width
+                    height = round(width * ratio)
+                elif W < H:
+                    height = height
+                    width = round(height * ratio)
+                else:  # W == H
+                    if width > height:
+                        height = width
+                    else:
+                        width = height
+
+            elif keep_proportion == "shortest":
+
+                ratio = H / W
+
+                if W > H:
+                    height = height
+                    width = round(height * ratio)
+                elif W < H:
+                    width = width
+                    height = round(width * ratio)
+                else:  # W == H
+                    if width < height:
+                        height = width
+                    else:
+                        width = height
 
             width = width - (width % 16)
             height = height - (height % 16)
