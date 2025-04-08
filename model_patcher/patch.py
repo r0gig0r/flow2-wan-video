@@ -1,12 +1,8 @@
 # reference: https://github.com/kijai/ComfyUI-KJNodes
 
 import torch
-import torch.nn as nn
-import traceback
-import comfy.model_patcher
-import comfy.model_management as mm
-import comfy.samplers
 
+import comfy.model_patcher
 from comfy.ldm.modules.attention import optimized_attention
 from comfy.ldm.flux.math import apply_rope
 from comfy.samplers import sampling_function, CFGGuider

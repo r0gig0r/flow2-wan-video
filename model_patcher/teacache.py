@@ -94,17 +94,15 @@ def patch_teacache(model, model_name, mode):
         use_ret_mode = c["transformer_options"]["use_ret_mode"]
 
         sigmas = c["transformer_options"]["sample_sigmas"]
-        current_percent = find_step_index_percent(sigmas, timestep)[1]
+        current_step, current_percent = find_step_index_percent(sigmas, timestep)
 
-        c["transformer_options"]["current_percent"] = current_percent
-        if 0.1 <= current_percent <= 1.0:
-            c["transformer_options"]["enable_teacache"] = True
-        else:
+        if current_step == 0:
             if (1 in cond_or_uncond) and hasattr(diffusion_model, 'teacache_state'):
                 delattr(diffusion_model, 'teacache_state')
 
-            if use_ret_mode:
-                c["transformer_options"]["enable_teacache"] = False
+        c["transformer_options"]["current_percent"] = current_percent
+        if use_ret_mode and current_percent < 0.1:
+            c["transformer_options"]["enable_teacache"] = False
 
         with context:
             return model_function(input, timestep, **c)
@@ -133,7 +131,9 @@ def teacache_wanmodel_forward(
     max_skip_steps = transformer_options.get("max_skip_steps")
     cond_or_uncond = transformer_options.get("cond_or_uncond")
     use_ret_mode = transformer_options.get("use_ret_mode")
-    enable_teacache = transformer_options.get("enable_teacache", False)
+    enable_teacache = transformer_options.get("enable_teacache", True)
+
+    print("enable_teacache:", enable_teacache)
 
     # embeddings
     x = self.patch_embedding(x.float()).to(x.dtype)
