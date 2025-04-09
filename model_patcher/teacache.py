@@ -68,7 +68,7 @@ def patch_teacache(model, model_name, mode):
     coefficients = SUPPORTED_MODELS_COEFFICIENTS[mode][model_type][0]
     rel_l1_thresh = SUPPORTED_MODELS_COEFFICIENTS[mode][model_type][1]
 
-    print(f"patched teacache mode: {mode}, model_type: {model_type}, rel_l1_thresh: {rel_l1_thresh}, coefficients[0] = {format(coefficients[0], ".8e")}")
+    print(f"patched teacache mode: {mode}, model_type: {model_type}, rel_l1_thresh: {rel_l1_thresh}")
 
     if 'transformer_options' not in new_model.model_options:
         new_model.model_options['transformer_options'] = {}    
@@ -101,7 +101,7 @@ def patch_teacache(model, model_name, mode):
                 delattr(diffusion_model, 'teacache_state')
 
         c["transformer_options"]["current_percent"] = current_percent
-        if use_ret_mode and current_percent < 0.1:
+        if use_ret_mode and current_percent < 0.1: # retention
             c["transformer_options"]["enable_teacache"] = False
 
         with context:
