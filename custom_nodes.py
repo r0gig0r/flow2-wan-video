@@ -330,7 +330,7 @@ class WanVideoConfigure_F2:
             skip_end_percent=skip_end_percent,
         )
 
-        return (None, width, height, )
+        return ({"key": "signal", "value": True}, width, height, )
     
 class WanVideoModelPatcher_F2:
     def __init__(self):
@@ -363,6 +363,7 @@ class WanVideoModelPatcher_F2:
             teacache,
             compile_model,
         ):
+        
         if self.patched_sage != sage_attention:
             patch_sage_attention(sage_attention)
             self.patched_sage = sage_attention

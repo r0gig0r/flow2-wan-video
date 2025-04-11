@@ -49,6 +49,8 @@ def patch_teacache(model, model_name, mode):
 
     # print(f"detected model_type: {model_name}", v)
 
+    model_name = model_name.lower()
+
     model_type = None
     if all(k in model_name for k in ("i2v", "14b", "720p")):
         model_type = "i2v_720p_14B"
