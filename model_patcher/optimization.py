@@ -7,14 +7,17 @@ import os, shutil, folder_paths
 inductor_cache_dir = os.path.join(folder_paths.base_path, ".inductor_cache")
 triton_cache_dir = os.path.join(folder_paths.base_path, ".triton_cache", "cache")
 
-if os.path.exists(inductor_cache_dir):
-    shutil.rmtree(inductor_cache_dir)
+try:
+    if os.path.exists(inductor_cache_dir):
+        shutil.rmtree(inductor_cache_dir)
 
-if os.path.exists(triton_cache_dir):
-    shutil.rmtree(triton_cache_dir)
+    if os.path.exists(triton_cache_dir):
+        shutil.rmtree(triton_cache_dir)
 
-os.makedirs(inductor_cache_dir)
-os.makedirs(triton_cache_dir)
+    os.makedirs(inductor_cache_dir)
+    os.makedirs(triton_cache_dir)
+except Exception as e:
+    print(e)
 
 os.environ["TORCHINDUCTOR_CACHE_DIR"] = inductor_cache_dir
 os.environ["TRITON_CACHE_DIR"] = triton_cache_dir
@@ -23,7 +26,6 @@ os.environ["TRITON_CACHE_DIR"] = triton_cache_dir
 #os.environ["TRITON_AUTOTUNE_MAX_EXAMPLES"] = "5"
 #os.environ["TRITON_AUTOTUNE_FAST"] = "1"
 #os.environ["TORCHINDUCTOR_DISABLE"] = "1"
-
 
 try:
     import torch
