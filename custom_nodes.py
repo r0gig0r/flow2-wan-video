@@ -812,37 +812,21 @@ class ResizeImage_F2:
         if keep_proportion != "none":
             _, H, W, _ = image.shape
 
-            if keep_proportion == "longest":
-
-                ratio = W / H
-
-                if W > H:
-                    width = width
-                    height = round(width * ratio)
-                elif W < H:
+            if keep_proportion == "shortest":
+                if W <= H:
                     height = height
-                    width = round(height * ratio)
-                else:  # W == H
-                    if width > height:
-                        height = width
-                    else:
-                        width = height
-
-            elif keep_proportion == "shortest":
-
-                ratio = H / W
-
-                if W > H:
-                    height = height
-                    width = round(height * ratio)
-                elif W < H:
+                    width = round(height * (W / H))
+                elif W >= H:
                     width = width
-                    height = round(width * ratio)
-                else:  # W == H
-                    if width < height:
-                        height = width
-                    else:
-                        width = height
+                    height = round(width * (H / W))
+
+            elif keep_proportion == "longest":
+                if W <= H:
+                    width = width
+                    height = round(width * (H / W))
+                elif W >= H:
+                    height = height
+                    width = round(height * (W / H))
 
             width = width - (width % 16)
             height = height - (height % 16)
