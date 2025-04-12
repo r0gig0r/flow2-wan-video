@@ -1,7 +1,7 @@
 [project]
 name = "flow2-wan-video"
 description = "Simple wan-video wrapper."
-version = "1.0.6"
+version = "1.0.7"
 license = {file = "LICENSE"}
 dependencies = []
 
