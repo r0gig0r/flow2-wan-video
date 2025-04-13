@@ -314,13 +314,12 @@ class WanVideoConfigure_F2:
 
     RETURN_TYPES = ("PATCH", "NUMBER", "NUMBER", )
     RETURN_NAMES = ("patch", "width", "height", )
-    FUNCTION = "set"
+    FUNCTION = "configure"
 
     CATEGORY = "Flow2/Wan 2.1"
-    
-    @classmethod
-    def set(
-            cls,
+
+    def configure(
+            self,
             positive,
             negative,
             width,
@@ -336,8 +335,8 @@ class WanVideoConfigure_F2:
             skip_start_percent,
             skip_end_percent,
         ):
-
-        cls.config = Config(
+        
+        WanVideoConfigure_F2.config = Config(
             positive=positive,
             negative=negative,
             width=width,
@@ -354,7 +353,7 @@ class WanVideoConfigure_F2:
             skip_end_percent=skip_end_percent,
         )
 
-        return ({"key": "signal", "value": True}, width, height, )
+        return (True, width, height, )
     
 class WanVideoModelPatcher_F2:
     def __init__(self):
@@ -387,6 +386,9 @@ class WanVideoModelPatcher_F2:
             teacache,
             compile_model,
         ):
+
+        if not patch:
+            return (model, )
         
         if self.patched_sage != sage_attention:
             patch_sage_attention(sage_attention)
@@ -409,9 +411,8 @@ class WanVideoModelPatcher_F2:
         config = WanVideoConfigure_F2.config
         model = comfy_extras.nodes_model_advanced.ModelSamplingSD3.patch(None, model, config.flow_shift)[0]
 
-        l = ((config.frames - 1) // 4) + 1
-        #model = patch_riflex(model, l, k=6)
         if config.frames > 0 and config.enhance_strength > 0:
+            l = ((config.frames - 1) // 4) + 1
             model = patch_enhance_video(model, weight=config.enhance_strength, latent_frames=l)
 
         if config.skip_layer != "disabled":
@@ -425,7 +426,6 @@ class WanVideoModelPatcher_F2:
 
         if compile_model != "disabled":
             model = torch_compile_model(model, compile_model)
-
 
         return (model, )
     
