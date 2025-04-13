@@ -5,57 +5,6 @@
   "last_link_id": 903,
   "nodes": [
     {
-      "id": 411,
-      "type": "WanVideoModelPatcher_F2",
-      "pos": [
-        -3330,
-        -3240
-      ],
-      "size": [
-        320,
-        130
-      ],
-      "flags": {
-        "collapsed": false
-      },
-      "order": 3,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "model",
-          "type": "MODEL",
-          "link": 885
-        },
-        {
-          "name": "patch",
-          "type": "PATCH",
-          "link": 891
-        }
-      ],
-      "outputs": [
-        {
-          "name": "model",
-          "type": "MODEL",
-          "links": [
-            887
-          ]
-        }
-      ],
-      "properties": {
-        "cnr_id": "flow2-wan-video",
-        "ver": "b5ffeebe8f4b9b30eae070698679fb184399e3e2",
-        "Node name for S&R": "WanVideoModelPatcher_F2"
-      },
-      "widgets_values": [
-        "triton",
-        "normal",
-        "disabled"
-      ],
-      "color": "#323",
-      "bgcolor": "#535",
-      "shape": 1
-    },
-    {
       "id": 321,
       "type": "VHS_VideoCombine",
       "pos": [
@@ -496,70 +445,6 @@
       "shape": 1
     },
     {
-      "id": 414,
-      "type": "WanVideoConfigure_F2",
-      "pos": [
-        -3730,
-        -3050
-      ],
-      "size": [
-        390,
-        540
-      ],
-      "flags": {},
-      "order": 2,
-      "mode": 0,
-      "showAdvanced": true,
-      "inputs": [],
-      "outputs": [
-        {
-          "name": "patch",
-          "type": "PATCH",
-          "links": [
-            891
-          ]
-        },
-        {
-          "name": "width",
-          "type": "NUMBER",
-          "links": [
-            892
-          ]
-        },
-        {
-          "name": "height",
-          "type": "NUMBER",
-          "links": [
-            900
-          ]
-        }
-      ],
-      "properties": {
-        "cnr_id": "flow2-wan-video",
-        "ver": "b5ffeebe8f4b9b30eae070698679fb184399e3e2",
-        "Node name for S&R": "WanVideoConfigure_F2"
-      },
-      "widgets_values": [
-        "The video shows a cat. The cat performs a r0t4tion 360 degrees rotation.",
-        "Overexposed, bright colors, static, blurred details, subtitles, picture, still picture, painting, overall gray, worst quality, low quality, JPEG compression residue, incomplete, extra fingers, poorly drawn hands, poorly drawn faces, deformed, mutation, disfigured, malformed limbs, fused fingers, cluttered background, three legs, walking backwards, camera flash",
-        400,
-        640,
-        3,
-        6,
-        6,
-        2,
-        1,
-        0,
-        "disabled",
-        "disabled",
-        0.20000000000000004,
-        0.8
-      ],
-      "color": "#2a363b",
-      "bgcolor": "#3f5159",
-      "shape": 1
-    },
-    {
       "id": 416,
       "type": "WanVideoEnhancer_F2",
       "pos": [
@@ -612,6 +497,121 @@
       ],
       "color": "#432",
       "bgcolor": "#653",
+      "shape": 1
+    },
+    {
+      "id": 411,
+      "type": "WanVideoModelPatcher_F2",
+      "pos": [
+        -3330,
+        -3240
+      ],
+      "size": [
+        320,
+        130
+      ],
+      "flags": {
+        "collapsed": false
+      },
+      "order": 3,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 885
+        },
+        {
+          "name": "patch",
+          "type": "PATCH",
+          "link": 891
+        }
+      ],
+      "outputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "links": [
+            887
+          ]
+        }
+      ],
+      "properties": {
+        "cnr_id": "flow2-wan-video",
+        "ver": "b5ffeebe8f4b9b30eae070698679fb184399e3e2",
+        "Node name for S&R": "WanVideoModelPatcher_F2"
+      },
+      "widgets_values": [
+        "disabled",
+        "disabled",
+        "disabled"
+      ],
+      "color": "#323",
+      "bgcolor": "#535",
+      "shape": 1
+    },
+    {
+      "id": 414,
+      "type": "WanVideoConfigure_F2",
+      "pos": [
+        -3730,
+        -3050
+      ],
+      "size": [
+        390,
+        540
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "showAdvanced": true,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "patch",
+          "type": "PATCH",
+          "links": [
+            891
+          ]
+        },
+        {
+          "name": "width",
+          "type": "NUMBER",
+          "links": [
+            892
+          ]
+        },
+        {
+          "name": "height",
+          "type": "NUMBER",
+          "links": [
+            900
+          ]
+        }
+      ],
+      "properties": {
+        "cnr_id": "flow2-wan-video",
+        "ver": "b5ffeebe8f4b9b30eae070698679fb184399e3e2",
+        "Node name for S&R": "WanVideoConfigure_F2"
+      },
+      "widgets_values": [
+        "",
+        "Overexposed, bright colors, static, blurred details, subtitles, picture, still picture, painting, overall gray, worst quality, low quality, JPEG compression residue, incomplete, extra fingers, poorly drawn hands, poorly drawn faces, deformed, mutation, disfigured, malformed limbs, fused fingers, cluttered background, three legs, walking backwards, camera flash",
+        400,
+        640,
+        3,
+        6,
+        6,
+        20,
+        1,
+        0,
+        "disabled",
+        "disabled",
+        0.20000000000000004,
+        0.8
+      ],
+      "color": "#2a363b",
+      "bgcolor": "#3f5159",
       "shape": 1
     }
   ],
@@ -752,10 +752,10 @@
   "config": {},
   "extra": {
     "ds": {
-      "scale": 1.1277086397380085,
+      "scale": 0.931990611353726,
       "offset": [
-        4098.320798072622,
-        3514.239279345462
+        4013.2589331371178,
+        3629.878191210414
       ]
     },
     "VHS_latentpreview": true,
