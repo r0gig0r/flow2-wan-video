@@ -1,0 +1,768 @@
+{
+  "id": "b1bbf508-65db-4d1d-a967-5d3ef5ca58dd",
+  "revision": 0,
+  "last_node_id": 417,
+  "last_link_id": 903,
+  "nodes": [
+    {
+      "id": 411,
+      "type": "WanVideoModelPatcher_F2",
+      "pos": [
+        -3330,
+        -3240
+      ],
+      "size": [
+        320,
+        130
+      ],
+      "flags": {
+        "collapsed": false
+      },
+      "order": 3,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 885
+        },
+        {
+          "name": "patch",
+          "type": "PATCH",
+          "link": 891
+        }
+      ],
+      "outputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "links": [
+            887
+          ]
+        }
+      ],
+      "properties": {
+        "cnr_id": "flow2-wan-video",
+        "ver": "b5ffeebe8f4b9b30eae070698679fb184399e3e2",
+        "Node name for S&R": "WanVideoModelPatcher_F2"
+      },
+      "widgets_values": [
+        "triton",
+        "normal",
+        "disabled"
+      ],
+      "color": "#323",
+      "bgcolor": "#535",
+      "shape": 1
+    },
+    {
+      "id": 321,
+      "type": "VHS_VideoCombine",
+      "pos": [
+        -2350,
+        -3050
+      ],
+      "size": [
+        310,
+        812
+      ],
+      "flags": {},
+      "order": 7,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 894
+        },
+        {
+          "name": "audio",
+          "shape": 7,
+          "type": "AUDIO",
+          "link": null
+        },
+        {
+          "name": "meta_batch",
+          "shape": 7,
+          "type": "VHS_BatchManager",
+          "link": null
+        },
+        {
+          "name": "vae",
+          "shape": 7,
+          "type": "VAE",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "Filenames",
+          "type": "VHS_FILENAMES",
+          "links": null
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfyui-videohelpersuite",
+        "ver": "972c87da577b47211c4e9aeed30dc38c7bae607f",
+        "Node name for S&R": "VHS_VideoCombine"
+      },
+      "widgets_values": {
+        "frame_rate": 16,
+        "loop_count": 0,
+        "filename_prefix": "Wan/",
+        "format": "video/h264-mp4",
+        "pix_fmt": "yuv420p",
+        "crf": 19,
+        "save_metadata": false,
+        "trim_to_audio": false,
+        "pingpong": false,
+        "save_output": true,
+        "videopreview": {
+          "hidden": false,
+          "paused": false,
+          "params": {
+            "filename": "Wan_00054.mp4",
+            "subfolder": "",
+            "type": "output",
+            "format": "video/h264-mp4",
+            "frame_rate": 16,
+            "workflow": "Wan_00054.png",
+            "fullpath": "D:\\ai\\ComfyUI_windows_portable\\ComfyUI\\output\\Wan_00054.mp4"
+          }
+        }
+      },
+      "color": "#2a363b",
+      "bgcolor": "#3f5159",
+      "shape": 1
+    },
+    {
+      "id": 415,
+      "type": "VHS_VideoCombine",
+      "pos": [
+        -2030,
+        -3050
+      ],
+      "size": [
+        310,
+        812
+      ],
+      "flags": {},
+      "order": 9,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 898
+        },
+        {
+          "name": "audio",
+          "shape": 7,
+          "type": "AUDIO",
+          "link": null
+        },
+        {
+          "name": "meta_batch",
+          "shape": 7,
+          "type": "VHS_BatchManager",
+          "link": null
+        },
+        {
+          "name": "vae",
+          "shape": 7,
+          "type": "VAE",
+          "link": null
+        },
+        {
+          "name": "frame_rate",
+          "type": "FLOAT,INT",
+          "widget": {
+            "name": "frame_rate"
+          },
+          "link": 899
+        }
+      ],
+      "outputs": [
+        {
+          "name": "Filenames",
+          "type": "VHS_FILENAMES",
+          "links": null
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfyui-videohelpersuite",
+        "ver": "972c87da577b47211c4e9aeed30dc38c7bae607f",
+        "Node name for S&R": "VHS_VideoCombine"
+      },
+      "widgets_values": {
+        "frame_rate": 0,
+        "loop_count": 0,
+        "filename_prefix": "Wan/",
+        "format": "video/h264-mp4",
+        "pix_fmt": "yuv420p",
+        "crf": 19,
+        "save_metadata": false,
+        "trim_to_audio": false,
+        "pingpong": false,
+        "save_output": true,
+        "videopreview": {
+          "hidden": false,
+          "paused": false,
+          "params": {
+            "filename": "Wan_00055.mp4",
+            "subfolder": "",
+            "type": "output",
+            "format": "video/h264-mp4",
+            "frame_rate": 30,
+            "workflow": "Wan_00055.png",
+            "fullpath": "D:\\ai\\ComfyUI_windows_portable\\ComfyUI\\output\\Wan_00055.mp4"
+          }
+        }
+      },
+      "color": "#2a363b",
+      "bgcolor": "#3f5159",
+      "shape": 1
+    },
+    {
+      "id": 401,
+      "type": "WanVideoSampler_F2",
+      "pos": [
+        -2670,
+        -3050
+      ],
+      "size": [
+        310,
+        768
+      ],
+      "flags": {
+        "collapsed": false
+      },
+      "order": 6,
+      "mode": 0,
+      "showAdvanced": true,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 887
+        },
+        {
+          "name": "start_image",
+          "shape": 7,
+          "type": "IMAGE",
+          "link": 876
+        },
+        {
+          "name": "end_image",
+          "shape": 7,
+          "type": "IMAGE",
+          "link": 903
+        }
+      ],
+      "outputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "links": [
+            894,
+            897
+          ]
+        }
+      ],
+      "properties": {
+        "cnr_id": "flow2-wan-video",
+        "ver": "b5ffeebe8f4b9b30eae070698679fb184399e3e2",
+        "Node name for S&R": "WanVideoSampler_F2"
+      },
+      "widgets_values": [
+        788950864174381,
+        "randomize",
+        "uni_pc",
+        "sgm_uniform",
+        false,
+        "default",
+        192,
+        512,
+        false,
+        ""
+      ],
+      "color": "#2a363b",
+      "bgcolor": "#3f5159",
+      "shape": 1
+    },
+    {
+      "id": 400,
+      "type": "ResizeImage_F2",
+      "pos": [
+        -3330,
+        -3050
+      ],
+      "size": [
+        320,
+        850
+      ],
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "width",
+          "type": "NUMBER",
+          "link": 892
+        },
+        {
+          "name": "height",
+          "type": "NUMBER",
+          "link": 900
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": [
+            876
+          ]
+        },
+        {
+          "name": "width",
+          "type": "NUMBER",
+          "links": [
+            901
+          ]
+        },
+        {
+          "name": "height",
+          "type": "NUMBER",
+          "links": [
+            902
+          ]
+        }
+      ],
+      "properties": {
+        "cnr_id": "flow2-wan-video",
+        "ver": "b5ffeebe8f4b9b30eae070698679fb184399e3e2",
+        "Node name for S&R": "ResizeImage_F2"
+      },
+      "widgets_values": [
+        "start.jpg",
+        "longest",
+        100,
+        1,
+        0,
+        0.015,
+        1234,
+        false,
+        "image",
+        ""
+      ],
+      "color": "#2a363b",
+      "bgcolor": "#3f5159",
+      "shape": 1
+    },
+    {
+      "id": 417,
+      "type": "ResizeImage_F2",
+      "pos": [
+        -3000,
+        -3050
+      ],
+      "size": [
+        320,
+        850
+      ],
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "width",
+          "type": "NUMBER",
+          "link": 901
+        },
+        {
+          "name": "height",
+          "type": "NUMBER",
+          "link": 902
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": [
+            903
+          ]
+        },
+        {
+          "name": "width",
+          "type": "NUMBER",
+          "links": null
+        },
+        {
+          "name": "height",
+          "type": "NUMBER",
+          "links": []
+        }
+      ],
+      "properties": {
+        "cnr_id": "flow2-wan-video",
+        "ver": "b5ffeebe8f4b9b30eae070698679fb184399e3e2",
+        "Node name for S&R": "ResizeImage_F2"
+      },
+      "widgets_values": [
+        "end.jpg",
+        "none",
+        100,
+        1,
+        0,
+        0,
+        1234,
+        false,
+        "image",
+        ""
+      ],
+      "color": "#2a363b",
+      "bgcolor": "#3f5159",
+      "shape": 1
+    },
+    {
+      "id": 262,
+      "type": "Note",
+      "pos": [
+        -4220,
+        -3050
+      ],
+      "size": [
+        420,
+        500
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "properties": {},
+      "widgets_values": [
+        "The video shows a man seated on a chair. The man and the chair performs a r0t4tion 360 degrees rotation.\n\nThe video features a Pomeranian puppy sitting on a gravel surface, and the puppy undergoes a r0t4tion 360 degrees rotation.\n\nIn the video, a miniature rodent is presented. The rodent is held in a person’s hands. The person then presses on the rodent, causing a sq41sh squish effect. The person keeps pressing down on the rodent, further showing the sq41sh squish effect.\n\nThe video opens on a [object]. A knife, held by a hand, is coming into frame and hovering over the [object]. The knife then begins cutting into the [object] to c4k3 cakeify it. As the knife slices the [object] open, the inside of the [object] is revealed to be cake with chocolate layers. The knife cuts through and the contents of the [object] are revealed."
+      ],
+      "color": "#2a363b",
+      "bgcolor": "#3f5159",
+      "shape": 1
+    },
+    {
+      "id": 392,
+      "type": "WanVideoModelLoader_F2",
+      "pos": [
+        -3730,
+        -3310
+      ],
+      "size": [
+        390,
+        202
+      ],
+      "flags": {
+        "collapsed": false
+      },
+      "order": 1,
+      "mode": 0,
+      "showAdvanced": true,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "MODEL",
+          "type": "MODEL",
+          "links": [
+            885
+          ]
+        }
+      ],
+      "properties": {
+        "cnr_id": "flow2-wan-video",
+        "ver": "b5ffeebe8f4b9b30eae070698679fb184399e3e2",
+        "Node name for S&R": "WanVideoModelLoader_F2"
+      },
+      "widgets_values": [
+        "wan2.1-fun-14b-inp-Q8_0.gguf",
+        "disabled",
+        1,
+        "disabled",
+        1,
+        "disabled",
+        1
+      ],
+      "color": "#323",
+      "bgcolor": "#535",
+      "shape": 1
+    },
+    {
+      "id": 414,
+      "type": "WanVideoConfigure_F2",
+      "pos": [
+        -3730,
+        -3050
+      ],
+      "size": [
+        390,
+        540
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "showAdvanced": true,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "patch",
+          "type": "PATCH",
+          "links": [
+            891
+          ]
+        },
+        {
+          "name": "width",
+          "type": "NUMBER",
+          "links": [
+            892
+          ]
+        },
+        {
+          "name": "height",
+          "type": "NUMBER",
+          "links": [
+            900
+          ]
+        }
+      ],
+      "properties": {
+        "cnr_id": "flow2-wan-video",
+        "ver": "b5ffeebe8f4b9b30eae070698679fb184399e3e2",
+        "Node name for S&R": "WanVideoConfigure_F2"
+      },
+      "widgets_values": [
+        "The video shows a cat. The cat performs a r0t4tion 360 degrees rotation.",
+        "Overexposed, bright colors, static, blurred details, subtitles, picture, still picture, painting, overall gray, worst quality, low quality, JPEG compression residue, incomplete, extra fingers, poorly drawn hands, poorly drawn faces, deformed, mutation, disfigured, malformed limbs, fused fingers, cluttered background, three legs, walking backwards, camera flash",
+        400,
+        640,
+        3,
+        6,
+        6,
+        2,
+        1,
+        0,
+        "disabled",
+        "disabled",
+        0.20000000000000004,
+        0.8
+      ],
+      "color": "#2a363b",
+      "bgcolor": "#3f5159",
+      "shape": 1
+    },
+    {
+      "id": 416,
+      "type": "WanVideoEnhancer_F2",
+      "pos": [
+        -2350,
+        -3280
+      ],
+      "size": [
+        310,
+        174
+      ],
+      "flags": {
+        "collapsed": false
+      },
+      "order": 8,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 897
+        }
+      ],
+      "outputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "links": [
+            898
+          ]
+        },
+        {
+          "name": "framerate",
+          "type": "INT",
+          "links": [
+            899
+          ]
+        }
+      ],
+      "properties": {
+        "cnr_id": "flow2-wan-video",
+        "ver": "b5ffeebe8f4b9b30eae070698679fb184399e3e2",
+        "Node name for S&R": "WanVideoEnhancer_F2"
+      },
+      "widgets_values": [
+        "disabled",
+        "rife49.pth",
+        1,
+        30,
+        "upscale_first"
+      ],
+      "color": "#432",
+      "bgcolor": "#653",
+      "shape": 1
+    }
+  ],
+  "links": [
+    [
+      876,
+      400,
+      0,
+      401,
+      1,
+      "IMAGE"
+    ],
+    [
+      885,
+      392,
+      0,
+      411,
+      0,
+      "MODEL"
+    ],
+    [
+      887,
+      411,
+      0,
+      401,
+      0,
+      "MODEL"
+    ],
+    [
+      891,
+      414,
+      0,
+      411,
+      1,
+      "PATCH"
+    ],
+    [
+      892,
+      414,
+      1,
+      400,
+      0,
+      "NUMBER"
+    ],
+    [
+      894,
+      401,
+      0,
+      321,
+      0,
+      "IMAGE"
+    ],
+    [
+      897,
+      401,
+      0,
+      416,
+      0,
+      "IMAGE"
+    ],
+    [
+      898,
+      416,
+      0,
+      415,
+      0,
+      "IMAGE"
+    ],
+    [
+      899,
+      416,
+      1,
+      415,
+      4,
+      "FLOAT,INT"
+    ],
+    [
+      900,
+      414,
+      2,
+      400,
+      1,
+      "NUMBER"
+    ],
+    [
+      901,
+      400,
+      1,
+      417,
+      0,
+      "NUMBER"
+    ],
+    [
+      902,
+      400,
+      2,
+      417,
+      1,
+      "NUMBER"
+    ],
+    [
+      903,
+      417,
+      0,
+      401,
+      2,
+      "IMAGE"
+    ]
+  ],
+  "groups": [
+    {
+      "id": 1,
+      "title": " ",
+      "bounding": [
+        -3740,
+        -3100,
+        2030,
+        910
+      ],
+      "color": "#444",
+      "font_size": 7,
+      "flags": {}
+    },
+    {
+      "id": 2,
+      "title": " ",
+      "bounding": [
+        -3740,
+        -3360,
+        2030,
+        260
+      ],
+      "color": "#444",
+      "font_size": 7,
+      "flags": {}
+    }
+  ],
+  "config": {},
+  "extra": {
+    "ds": {
+      "scale": 1.1277086397380085,
+      "offset": [
+        4098.320798072622,
+        3514.239279345462
+      ]
+    },
+    "VHS_latentpreview": true,
+    "VHS_latentpreviewrate": 0,
+    "VHS_MetadataImage": true,
+    "VHS_KeepIntermediate": true,
+    "ue_links": []
+  },
+  "version": 0.4
+}
