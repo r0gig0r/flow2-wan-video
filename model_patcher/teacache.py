@@ -27,30 +27,6 @@ WEIGHT_480P = -4.353462645667605e-05
 offload_device = mm.unet_offload_device()
 
 def patch_teacache(model, model_name, mode):
-    # model_type = model.model.model_config.unet_config.get("model_type", 0)
-    # num_layers = model.model.model_config.unet_config.get("num_layers", 0)
-    # in_dim = model.model.model_config.unet_config.get("in_dim", 0)
-
-    # if model_type == "t2v":
-    #     model_name = f"{model_type}_{("14B" if num_layers == 40 else "1_3B")}"
-    # elif model_type == "i2v":
-    #     p = "720p"
-    #     v = 0.0
-    #     diffusion_model = model.get_model_object("diffusion_model")
-    #     for k, v in diffusion_model.state_dict().items():
-    #         if k in "weight":
-    #             v += v.float().mean().item()
-
-    #     v = v.float().mean().item()
-    #     if -4e-05 > v:
-    #         p = "480p"
-
-    #     model_name = f"{model_type}_{p}_14B"
-
-    # print(f"detected model_type: {model_name}", v)
-
-    model_name = model_name.lower()
-
     model_type = None
     if all(k in model_name for k in ("i2v", "14b", "720p")):
         model_type = "i2v_720p_14B"
@@ -60,6 +36,9 @@ def patch_teacache(model, model_name, mode):
         model_type = "t2v_14B"
     elif all(k in model_name for k in ("t2v", "1.3b")):
         model_type = "t2v_1_3B"
+
+    elif all(k in model_name for k in ("fun", "14b", "inp")):
+        model_type = "i2v_480p_14B"
 
     if model_type is None:
         print("teacache model_type is None")

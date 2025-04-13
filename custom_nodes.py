@@ -2,6 +2,7 @@ import gc
 import os
 import shutil
 import random
+import comfy.model_base
 import folder_paths
 import torch
 
@@ -14,7 +15,7 @@ import comfy_extras.nodes_model_advanced
 
 from nodes import CLIPVisionEncode, CLIPTextEncode, VAEDecode, VAEDecodeTiled
 from comfy.sd import load_text_encoder_state_dicts, CLIPType, VAE
-from comfy.utils import common_upscale, load_torch_file
+from comfy.utils import common_upscale, load_torch_file, resize_to_batch_size
 from comfy.clip_vision import load_clipvision_from_sd
 from node_helpers import conditioning_set_values
 from .latent_preview import prepare_callback, get_previewer
@@ -45,11 +46,11 @@ def add_model_list_from_huggingface(repo_id, filter):
         print(f"Failed to fetch from {repo_id}: {e}")
 
 try:
+    add_model_list_from_huggingface("city96/Wan2.1-Fun-14B-InP-gguf", ".gguf")
     add_model_list_from_huggingface("city96/Wan2.1-I2V-14B-480P-gguf", ".gguf")
     add_model_list_from_huggingface("city96/Wan2.1-I2V-14B-720P-gguf", ".gguf")
     add_model_list_from_huggingface("city96/Wan2.1-T2V-14B-gguf", ".gguf")
     add_model_list_from_huggingface(REPO_ID_COMFYORG, "diffusion_models")
-    # add_model_list_from_huggingface("city96/Wan2.1-Fun-14B-InP-gguf", ".gguf")
     # add_model_list_from_huggingface("city96/Wan2.1-Fun-14B-Control-gguf", ".gguf")
 
     if not REPO_ID_MODELS:
@@ -70,38 +71,58 @@ offload_device = mm.unet_offload_device()
 torch_device = mm.get_torch_device()
 
 def convert_filename_comfyorg(model_type, model_name):
-    return f"split_files/{model_type}/{model_name}", model_type
+    return f"split_files/{model_type}/{model_name}"
 
-def download_huggingface_model(repo_id, file_name, saved_directory):
-    model_name = file_name.rsplit('/', 1)[-1]
+# def download_huggingface_model(repo_id, file_name, saved_directory):
+#     model_name = file_name.rsplit('/', 1)[-1]
 
-    saved_directory = os.path.join(folder_paths.models_dir, saved_directory)
-    saved_full_path = os.path.join(saved_directory, model_name)
-    if os.path.exists(saved_full_path):
-        print(f"exists model: {saved_full_path}")
-        return saved_full_path
+#     saved_directory = os.path.join(folder_paths.models_dir, saved_directory)
+#     saved_full_path = os.path.join(saved_directory, model_name)
+#     if os.path.exists(saved_full_path):
+#         print(f"exists model: {saved_full_path}")
+#         return saved_full_path
     
-    print(f"Downloading the {model_name} model. Please wait a moment...")
+#     print(f"Downloading the {model_name} model. Please wait a moment...")
 
-    from huggingface_hub import snapshot_download
-    snapshot_download(
-        repo_id=repo_id,
-        local_dir=saved_directory,
-        allow_patterns=file_name,
-    )
+#     from huggingface_hub import snapshot_download
+#     snapshot_download(
+#         repo_id=repo_id,
+#         local_dir=saved_directory,
+#         allow_patterns=file_name,
+#     )
 
-    downloaded_path = os.path.join(saved_directory, file_name)
-    if downloaded_path != saved_full_path and os.path.exists(downloaded_path):
-        shutil.move(downloaded_path, saved_full_path)
-        print(f"File moved to: {saved_full_path}, check exists: {os.path.exists(saved_full_path)}")
+#     downloaded_path = os.path.join(saved_directory, file_name)
+#     if downloaded_path != saved_full_path and os.path.exists(downloaded_path):
+#         shutil.move(downloaded_path, saved_full_path)
+#         print(f"File moved to: {saved_full_path}, check exists: {os.path.exists(saved_full_path)}")
 
-    return saved_full_path
+#     return saved_full_path
 
 def download_github_model(repo_id, tag, file_name, saved_directory):
-    download_url = f"https://github.com/{repo_id}/releases/download/{tag}/{file_name}/"
+    download_url = f"https://github.com/{repo_id}/releases/download/{tag}/{file_name}"
 
     saved_directory = os.path.join(folder_paths.models_dir, saved_directory)
     saved_full_path = os.path.join(saved_directory, file_name)
+    if os.path.exists(saved_full_path):
+        print(f"exists model: {saved_full_path}")
+        return saved_full_path
+    else:
+        os.makedirs(saved_directory, exist_ok=True)
+    
+    print(f"Downloading the {file_name} model. Please wait a moment...")
+
+    download_url_to_file(download_url, saved_full_path, hash_prefix=None, progress=True)
+
+    return saved_full_path
+
+def download_huggingface_model(repo_id, file_name, saved_directory):
+    download_url = f"https://huggingface.co/{repo_id}/resolve/main/{file_name}"
+
+    file_name = file_name.rsplit("/", 1)[-1]
+
+    saved_directory = os.path.join(folder_paths.models_dir, saved_directory)
+    saved_full_path = os.path.join(saved_directory, file_name)
+
     if os.path.exists(saved_full_path):
         print(f"exists model: {saved_full_path}")
         return saved_full_path
@@ -153,7 +174,7 @@ class WanVideoModelLoader_F2:
     @classmethod
     def get_clip(cls):
         if cls.encoder_models["clip"] is None:
-            path = download_huggingface_model(REPO_ID_COMFYORG, *convert_filename_comfyorg("text_encoders", CLIP_NAME))
+            path = download_huggingface_model(REPO_ID_COMFYORG, convert_filename_comfyorg("text_encoders", CLIP_NAME), "text_encoders")
             state_dicts = load_torch_file(path, safe_load=True)
             clip = load_text_encoder_state_dicts(
                 state_dicts=[state_dicts],
@@ -168,7 +189,7 @@ class WanVideoModelLoader_F2:
     @classmethod
     def get_clip_vision(cls):
         if cls.encoder_models["clip_vision"] is None:
-            path = download_huggingface_model(REPO_ID_COMFYORG, *convert_filename_comfyorg("clip_vision", CLIP_VISION_NAME))
+            path = download_huggingface_model(REPO_ID_COMFYORG, convert_filename_comfyorg("clip_vision", CLIP_VISION_NAME), "clip_vision")
             state_dicts = load_torch_file(path, safe_load=True)
             clip_vision = load_clipvision_from_sd(sd=state_dicts)
             del state_dicts
@@ -179,7 +200,7 @@ class WanVideoModelLoader_F2:
     @classmethod
     def get_vae(cls):
         if cls.encoder_models["vae"] is None:
-            path = download_huggingface_model(REPO_ID_COMFYORG, *convert_filename_comfyorg("vae", VAE_NAME))
+            path = download_huggingface_model(REPO_ID_COMFYORG, convert_filename_comfyorg("vae", VAE_NAME), "vae")
             state_dicts = load_torch_file(path, safe_load=True)
             vae = VAE(sd=state_dicts)
             del state_dicts
@@ -225,6 +246,7 @@ class WanVideoModelLoader_F2:
             lora_2, lora_2_strength,
             lora_3, lora_3_strength,
         ):
+
         if cls.loaded_model is None or cls.loaded_model[0] != unet_name:
 
             repo_id = REPO_ID_MODELS[unet_name]
@@ -232,6 +254,8 @@ class WanVideoModelLoader_F2:
                 path = download_huggingface_model(REPO_ID_COMFYORG, *convert_filename_comfyorg("diffusion_models", unet_name))
             else:
                 path = download_huggingface_model(repo_id, unet_name, "diffusion_models")
+
+            unet_name = unet_name.lower()
 
             if "gguf" in unet_name:
                 print("load gguf model...")
@@ -412,6 +436,113 @@ def clear_cuda_cache():
         torch.cuda.empty_cache()
         torch.cuda.ipc_collect()
 
+def concat_cond(self, **kwargs):
+    noise = kwargs.get("noise", None)
+    extra_channels = self.diffusion_model.patch_embedding.weight.shape[1] - noise.shape[1]
+    if extra_channels == 0:
+        return None
+    image = kwargs.get("concat_latent_image", None)
+    device = kwargs["device"]
+    if image is None:
+        image = torch.zeros_like(noise)
+        shape_image = list(noise.shape)
+        shape_image[1] = extra_channels
+        image = torch.zeros(shape_image, dtype=noise.dtype, layout=noise.layout, device=noise.device)
+    else:
+        image = common_upscale(image.to(device), noise.shape[-1], noise.shape[-2], "bilinear", "center")
+        for i in range(0, image.shape[1], 16):
+            image[:, i: i + 16] = self.process_latent_in(image[:, i: i + 16])
+        image = resize_to_batch_size(image, noise.shape[0])
+    if not self.image_to_video or extra_channels == image.shape[1]:
+        return image
+    mask = kwargs.get("concat_mask", kwargs.get("denoise_mask", None))
+    if mask is None:
+        mask = torch.zeros_like(noise)[:, :4]
+    else:
+        if mask.shape[1] != 4:
+            mask = torch.mean(mask, dim=1, keepdim=True)
+
+        mask = 1.0 - mask
+
+        mask = common_upscale(mask.to(device), noise.shape[-1], noise.shape[-2], "bilinear", "center")
+        if mask.shape[-3] < noise.shape[-3]:
+            mask = torch.nn.functional.pad(mask, (0, 0, 0, 0, 0, noise.shape[-3] - mask.shape[-3]), mode='constant', value=0)
+
+        if mask.shape[1] == 1:
+            mask = mask.repeat(1, 4, 1, 1, 1)
+
+        mask = resize_to_batch_size(mask, noise.shape[0])
+
+    return torch.cat((mask, image), dim=1)
+ 
+comfy.model_base.WAN21.concat_cond = concat_cond
+
+# original_encode = comfy.ldm.wan.vae.WanVAE.encode
+# original_decode = comfy.ldm.wan.vae.WanVAE.decode
+
+# def encode(self, x):
+#     self.clear_cache()
+
+#     t = x.shape[2]
+#     iter_ = 1 + (t - 1) // 4
+
+#     for i in range(iter_):
+#         self._enc_conv_idx = [0]
+#         if i == 0:
+#             out = self.encoder(
+#                 x[:, :, :1, :, :],
+#                 feat_cache=self._enc_feat_map,
+#                 feat_idx=self._enc_conv_idx)
+#         elif i == iter_ - 1:
+#             out_ = self.encoder(
+#                 x[:, :, -1:, :, :],
+#                 feat_cache=[None] * self._enc_conv_num,
+#                 feat_idx=self._enc_conv_idx)
+#             out = torch.cat([out, out_], dim=2)
+#         else:
+#             out_ = self.encoder(
+#                 x[:, :, 1 + 4 * (i - 1):1 + 4 * i, :, :],
+#                 feat_cache=self._enc_feat_map,
+#                 feat_idx=self._enc_conv_idx)
+#             out = torch.cat([out, out_], dim=2)
+            
+#     out_head = out[:, :, :iter_ - 1, :, :]
+#     out_tail = out[:, :, -1, :, :].unsqueeze(2)
+#     mu, log_var = torch.cat([self.conv1(out_head), self.conv1(out_tail)], dim=2).chunk(2, dim=1)
+
+#     self.clear_cache()
+#     return mu
+
+# def decode(self, z):
+#     self.clear_cache()
+
+#     iter_ = z.shape[2]
+#     z_head = z[:,:,:-1,:,:]
+#     z_tail = z[:,:,-1,:,:].unsqueeze(2)
+#     x = torch.cat([self.conv2(z_head), self.conv2(z_tail)], dim=2)
+#     for i in range(iter_):
+#         self._conv_idx = [0]
+#         if i == 0:
+#             out = self.decoder(
+#                 x[:, :, i:i + 1, :, :],
+#                 feat_cache=self._feat_map,
+#                 feat_idx=self._conv_idx)
+#         elif i == iter_ - 1:
+#             out_ = self.decoder(
+#                 x[:, :, -1, :, :].unsqueeze(2),
+#                 feat_cache=None,
+#                 feat_idx=self._conv_idx)
+#             out = torch.cat([out, out_], dim=2)
+#         else:
+#             out_ = self.decoder(
+#                 x[:, :, i:i + 1, :, :],
+#                 feat_cache=self._feat_map,
+#                 feat_idx=self._conv_idx)
+#             out = torch.cat([out, out_], dim=2)
+
+#     self.clear_cache()
+#     return out
+
 class WanVideoSampler_F2:
     def __init__(self):
         pass
@@ -459,7 +590,7 @@ class WanVideoSampler_F2:
         start_image = common_upscale(start_image[:length].movedim(-1, 1), width, height, "bilinear", "center").movedim(1, -1)
         empty_frames = torch.ones((length, height, width, start_image.shape[-1])).cpu() * 0.5
         empty_frames[:start_image.shape[0]] = start_image
-        concat_latent_image = vae.encode(empty_frames[:, :, :, :3]) # vae load
+        concat_latent_image = vae.encode(empty_frames[:, :, :, :3]) # load vae
 
         mask = torch.ones((1, 1, latent.shape[2], concat_latent_image.shape[-2], concat_latent_image.shape[-1])).cpu()
         mask[:, :, :((start_image.shape[0] - 1) // 4) + 1] = 0.0
@@ -469,11 +600,23 @@ class WanVideoSampler_F2:
 
         return (concat_latent_image, mask, )
     
-    def encode_start_end_frames(self, width, height, length, latent, vae, start_image, end_image):
-        pass # todo
+    def encode_wan_fun_inpaint(self, width, height, length, latent, vae, start_image, end_image):
+        start_image = comfy.utils.common_upscale(start_image[:length].movedim(-1, 1), width, height, "bilinear", "center").movedim(1, -1)
+        end_image = comfy.utils.common_upscale(end_image[-length:].movedim(-1, 1), width, height, "bilinear", "center").movedim(1, -1)
+        
+        empty_frames = torch.ones((length, height, width, 3)) * 0.5
+        mask = torch.ones((1, 1, latent.shape[2] * 4, latent.shape[-2], latent.shape[-1]))
 
-    def encode_wan_i2v_inpaint(self, width, height, length, latent, vae, start_image, end_image):
-        pass # todo
+        empty_frames[:1] = start_image
+        empty_frames[-1:] = end_image
+
+        mask[:, :, :4] = 0.0
+        mask[:, :, -1:] = 0.0
+
+        concat_latent_image = vae.encode(empty_frames[:,:,:,:3])
+        mask = mask.view(1, mask.shape[2] // 4, 4, mask.shape[3], mask.shape[4]).transpose(1, 2)
+
+        return (concat_latent_image, mask, )
 
     def encode_wan_i2v_control(self, width, height, length, latent, vae, start_image, end_image):
         pass # todo
@@ -501,8 +644,21 @@ class WanVideoSampler_F2:
             start_image=None,
             end_image=None,
         ):
+        
+        model_name = WanVideoModelLoader_F2.loaded_model[0]
 
-        i2v = "i2v" in WanVideoModelLoader_F2.loaded_model[0].lower() #model.model.model_config.unet_config.get("model_type", "")
+        fun_inpaint = "fun" in model_name and "inp" in model_name
+        fun_control = "fun" in model_name and "control" in model_name
+
+        i2v = "i2v" in model_name
+
+        # if i2v and end_image is not None:
+        #     comfy.ldm.wan.vae.WanVAE.encode = encode
+        #     comfy.ldm.wan.vae.WanVAE.decode = decode
+        #     print("swapped WanVAE functions")
+        # else:
+        #     comfy.ldm.wan.vae.WanVAE.encode = original_encode
+        #     comfy.ldm.wan.vae.WanVAE.decode = original_decode
 
         config = WanVideoConfigure_F2.config
 
@@ -526,13 +682,17 @@ class WanVideoSampler_F2:
         
         vae = WanVideoModelLoader_F2.get_vae()
 
-        if i2v and start_image is not None:
+        if (i2v or fun_inpaint) and start_image is not None:
             clip_vision = WanVideoModelLoader_F2.get_clip_vision()
             clip_vision_output = self.encode_image(clip_vision, start_image)
             clip_vision.model.to(offload_device)
             clear_cuda_cache()
-        
-            concat_latent_image, concat_mask = self.encode_image_to_video(width, height, config.frames, empty_latent["samples"], vae, start_image)
+            
+            if fun_inpaint and end_image is not None:
+                concat_latent_image, concat_mask = self.encode_wan_fun_inpaint(width, height, config.frames, empty_latent["samples"], vae, start_image, end_image)
+            else:
+                concat_latent_image, concat_mask = self.encode_image_to_video(width, height, config.frames, empty_latent["samples"], vae, start_image)
+
             vae.first_stage_model.to(offload_device)
             clear_cuda_cache()
 
