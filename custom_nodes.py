@@ -251,7 +251,7 @@ class WanVideoModelLoader_F2:
 
             repo_id = REPO_ID_MODELS[unet_name]
             if repo_id == REPO_ID_COMFYORG:
-                path = download_huggingface_model(REPO_ID_COMFYORG, *convert_filename_comfyorg("diffusion_models", unet_name))
+                path = download_huggingface_model(REPO_ID_COMFYORG, convert_filename_comfyorg("diffusion_models", unet_name), "diffusion_models")
             else:
                 path = download_huggingface_model(repo_id, unet_name, "diffusion_models")
 
