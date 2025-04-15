@@ -45,24 +45,26 @@ def update_folder_names_and_paths(key, targets=[]):
 # Add a custom keys for files ending in .gguf
 update_folder_names_and_paths("unet_gguf", ["diffusion_models", "unet"])
 
-def add_model_list_from_huggingface(repo_id, filter):
+def add_model_list_from_huggingface(repo_id, filters, ignore_filters=None):
     from huggingface_hub import HfApi
     api = HfApi()
     try:
         files = api.list_repo_files(repo_id)
         for file in files:
-            if filter in file:
-                file_name = file.rsplit("/", 1)[-1]
-                REPO_ID_MODELS[file_name] = repo_id
+            if all(f in file for f in filters):
+                if not ignore_filters or not any(f in file for f in ignore_filters):
+                    file_name = file.rsplit("/", 1)[-1]
+                    REPO_ID_MODELS[file_name] = repo_id
     except Exception as e:
         print(f"Failed to fetch from {repo_id}: {e}")
 
 try:
-    add_model_list_from_huggingface("city96/Wan2.1-Fun-14B-InP-gguf", ".gguf")
-    add_model_list_from_huggingface("city96/Wan2.1-I2V-14B-480P-gguf", ".gguf")
-    add_model_list_from_huggingface("city96/Wan2.1-I2V-14B-720P-gguf", ".gguf")
-    add_model_list_from_huggingface("city96/Wan2.1-T2V-14B-gguf", ".gguf")
-    add_model_list_from_huggingface(REPO_ID_COMFYORG, "diffusion_models")
+    add_model_list_from_huggingface("city96/Wan2.1-Fun-14B-InP-gguf", [".gguf"])
+    add_model_list_from_huggingface("city96/Wan2.1-I2V-14B-480P-gguf", [".gguf"])
+    add_model_list_from_huggingface("city96/Wan2.1-I2V-14B-720P-gguf", [".gguf"])
+    add_model_list_from_huggingface("city96/Wan2.1-T2V-14B-gguf", [".gguf"])
+    add_model_list_from_huggingface(REPO_ID_COMFYORG, ["diffusion_models"])
+    add_model_list_from_huggingface(REPO_ID_KIJAI, ["Wan", "e5m2"], ["Control"])
     # add_model_list_from_huggingface("city96/Wan2.1-Fun-14B-Control-gguf", ".gguf")
     
     if not REPO_ID_MODELS:
