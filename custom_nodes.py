@@ -33,6 +33,18 @@ REPO_ID_COMFYORG = "Comfy-Org/Wan_2.1_ComfyUI_repackaged"
 REPO_ID_KIJAI = "Kijai/WanVideo_comfy"
 REPO_ID_MODELS = {}
 
+MODEL_LIST = []
+
+def update_folder_names_and_paths(key, targets=[]):
+    base = folder_paths.folder_names_and_paths.get(key, ([], {}))
+    base = base[0] if isinstance(base[0], (list, set, tuple)) else []
+    target = next((x for x in targets if x in folder_paths.folder_names_and_paths), targets[0])
+    orig, _ = folder_paths.folder_names_and_paths.get(target, ([], {}))
+    folder_paths.folder_names_and_paths[key] = (orig or base, {".safetensors", ".gguf"})
+
+# Add a custom keys for files ending in .gguf
+update_folder_names_and_paths("unet_gguf", ["diffusion_models", "unet"])
+
 def add_model_list_from_huggingface(repo_id, filter):
     from huggingface_hub import HfApi
     api = HfApi()
@@ -52,13 +64,15 @@ try:
     add_model_list_from_huggingface("city96/Wan2.1-T2V-14B-gguf", ".gguf")
     add_model_list_from_huggingface(REPO_ID_COMFYORG, "diffusion_models")
     # add_model_list_from_huggingface("city96/Wan2.1-Fun-14B-Control-gguf", ".gguf")
-
+    
     if not REPO_ID_MODELS:
-        raise ValueError("Model list is empty.")
+        raise ValueError("Failed to fetch model list.")
+    else:
+        MODEL_LIST = [k for k in REPO_ID_MODELS.keys()]
 
 except Exception as e:
-    print(f"Using fallback due to error: {e}")
-    REPO_ID_MODELS = folder_paths.get_filename_list("diffusion_models")
+    print(e)
+    MODEL_LIST = folder_paths.get_filename_list("unet_gguf")
 
 CLIP_NAME = "umt5_xxl_fp8_e4m3fn_scaled.safetensors"
 CLIP_VISION_NAME = "clip_vision_h.safetensors"
@@ -157,12 +171,10 @@ class WanVideoModelLoader_F2:
         lora_files = ["disabled"] + folder_paths.get_filename_list("loras")
         return {
             "required":{
-                "unet_name": ([
-                    k for k in REPO_ID_MODELS.keys()
-                ], ),
-            "lora_1": (lora_files, {"advanced": True}), "lora_1_strength": ("FLOAT", {"default": 1.00, "min": -10.00, "max": 10.00, "step":0.01, "round": 0.01, "advanced": True}),
-            "lora_2": (lora_files, {"advanced": True}), "lora_2_strength": ("FLOAT", {"default": 1.00, "min": -10.00, "max": 10.00, "step":0.01, "round": 0.01, "advanced": True}),
-            "lora_3": (lora_files, {"advanced": True}), "lora_3_strength": ("FLOAT", {"default": 1.00, "min": -10.00, "max": 10.00, "step":0.01, "round": 0.01, "advanced": True}),
+                "unet_name": (MODEL_LIST, ),
+                "lora_1": (lora_files, {"advanced": True}), "lora_1_strength": ("FLOAT", {"default": 1.00, "min": -10.00, "max": 10.00, "step":0.01, "round": 0.01, "advanced": True}),
+                "lora_2": (lora_files, {"advanced": True}), "lora_2_strength": ("FLOAT", {"default": 1.00, "min": -10.00, "max": 10.00, "step":0.01, "round": 0.01, "advanced": True}),
+                "lora_3": (lora_files, {"advanced": True}), "lora_3_strength": ("FLOAT", {"default": 1.00, "min": -10.00, "max": 10.00, "step":0.01, "round": 0.01, "advanced": True}),
             },
         }
        
@@ -249,7 +261,8 @@ class WanVideoModelLoader_F2:
 
         if cls.loaded_model is None or cls.loaded_model[0] != unet_name:
 
-            repo_id = REPO_ID_MODELS[unet_name]
+            repo_id = REPO_ID_MODELS[unet_name] if unet_name in REPO_ID_MODELS else ""
+
             if repo_id == REPO_ID_COMFYORG:
                 path = download_huggingface_model(REPO_ID_COMFYORG, convert_filename_comfyorg("diffusion_models", unet_name), "diffusion_models")
             else:
