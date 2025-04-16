@@ -13,6 +13,8 @@ import comfy.sample
 import comfy.samplers
 import comfy_extras.nodes_model_advanced
 
+from types import SimpleNamespace
+
 from nodes import CLIPVisionEncode, CLIPTextEncode, VAEDecode, VAEDecodeTiled
 from comfy.sd import load_text_encoder_state_dicts, CLIPType, VAE
 from comfy.utils import common_upscale, load_torch_file, resize_to_batch_size
@@ -320,10 +322,11 @@ class WanVideoConfigure_F2:
                 "sampling_steps": ("INT", {"default": 20, "min": 0, "max": 50}),
                 "guidance_percent": ("FLOAT", {"default": 1.00, "min": 0.00, "max": 1.00, "step":0.01, "round": 0.01, "advanced": True}),
                 "enhance_strength": ("FLOAT", {"default": 0.00, "min": 0.00, "max": 10.0, "step":0.01, "round": 0.01, "advanced": True}),
-                "cfg_zero_steps": (("disabled", "1", "2", "3", "4" ), {"advanced": True}),
+                "cfg_zero_steps": (("disabled", "1", "2", "3", "4"), {"advanced": True}),
                 "skip_layer": (("disabled", "9", "10", "9, 10"), {"advanced": True}),
                 "skip_start_percent": ("FLOAT", {"default": 0.1, "min": 0.00, "max": 1.00, "step":0.01, "round": 0.0, "advanced": True}),
                 "skip_end_percent": ("FLOAT", {"default": 0.9, "min": 0.00, "max": 1.00, "step":0.01, "round": 0.01, "advanced": True}),
+                "iteration_count": ("INT", {"default": 1, "min": 1, "max": 10, "tooltip": "If the value is 2 or more, the last image is used."}),
             },
         }
 
@@ -349,6 +352,7 @@ class WanVideoConfigure_F2:
             skip_layer,
             skip_start_percent,
             skip_end_percent,
+            iteration_count,
         ):
         
         WanVideoConfigure_F2.config = Config(
@@ -366,6 +370,7 @@ class WanVideoConfigure_F2:
             skip_layer=skip_layer,
             skip_start_percent=skip_start_percent,
             skip_end_percent=skip_end_percent,
+            iteration_count=iteration_count,
         )
 
         return (True, width, height, )
@@ -585,7 +590,7 @@ class WanVideoSampler_F2:
     #RETURN_TYPES = ("IMAGE", "MODEL", "CONDITIONING", "CONDITIONING", "LATENT", "VAE", )
     RETURN_TYPES = ("IMAGE", )
     RETURN_NAMES = ("images", )
-    FUNCTION = "sampling"
+    FUNCTION = "process"
 
     CATEGORY = "Flow2/Wan 2.1"
 
@@ -644,8 +649,8 @@ class WanVideoSampler_F2:
         high_sigmas = full_sigmas[:step1 + 1]
         low_sigmas = full_sigmas[step1:]
         return (full_sigmas, high_sigmas, low_sigmas)
-
-    def sampling(
+    
+    def process(
             self,
             model,
             seed,
@@ -659,32 +664,63 @@ class WanVideoSampler_F2:
             start_image=None,
             end_image=None,
         ):
-        
+
+        args = {
+            "model": model,
+            "seed": seed,
+            "sampler": sampler,
+            "scheduler": scheduler,
+            "denoised_output": denoised_output,
+            "vae_decode_type": vae_decode_type,
+            "vae_tile_size": vae_tile_size,
+            "preview_resolution": preview_resolution,
+            "unload_all_models": unload_all_models,
+            "start_image": start_image,
+            "end_image": end_image,
+        }
+
+        config = WanVideoConfigure_F2.config
         model_name = WanVideoModelLoader_F2.loaded_model[0]
 
         fun_inpaint = "fun" in model_name and "inp" in model_name
         fun_control = "fun" in model_name and "control" in model_name
-
-        i2v = "i2v" in model_name
-
-        # if i2v and end_image is not None:
-        #     comfy.ldm.wan.vae.WanVAE.encode = encode
-        #     comfy.ldm.wan.vae.WanVAE.decode = decode
-        #     print("swapped WanVAE functions")
-        # else:
-        #     comfy.ldm.wan.vae.WanVAE.encode = original_encode
-        #     comfy.ldm.wan.vae.WanVAE.decode = original_decode
-
-        config = WanVideoConfigure_F2.config
+        image_to_video = ("i2v" in model_name or fun_inpaint)
 
         width = config.width
         height = config.height
 
-        if i2v and start_image is not None:
+        if image_to_video and start_image is not None:
             width = start_image.shape[2]
             height = start_image.shape[1]
 
         print(f"final resolution: {width} x {height}")
+
+        args["width"] = width
+        args["height"] = height
+        args["image_to_video"] = image_to_video
+        args["fun_inpaint"] = fun_inpaint
+
+        if image_to_video and config.iteration_count > 1:
+
+            new_images = torch.empty(config.iteration_count * 49, height, width, 3)
+
+            images = None
+            for i in range(config.iteration_count):
+                if images is not None:
+                    args["start_image"] = args["end_image"] if args["end_image"] is not None else images[-1:]
+                    args["end_image"] = None
+
+                images = self.sampling(**args)
+                new_images[i * 49:(i + 1) * 49] = images
+        else:
+            new_images = self.sampling(**args)
+        
+        return (new_images, )
+
+
+    def sampling(self, **kwargs):
+        args = SimpleNamespace(**kwargs)
+        config = WanVideoConfigure_F2.config
 
         clip = WanVideoModelLoader_F2.get_clip()
         positive = self.encode_text(clip, config.positive)
@@ -693,20 +729,20 @@ class WanVideoSampler_F2:
         clear_cuda_cache()
 
         batch_size = 1
-        empty_latent = self.create_empty_latent(width, height, config.frames, batch_size)
+        empty_latent = self.create_empty_latent(args.width, args.height, config.frames, batch_size)
         
         vae = WanVideoModelLoader_F2.get_vae()
 
-        if (i2v or fun_inpaint) and start_image is not None:
+        if args.image_to_video and args.start_image is not None:
             clip_vision = WanVideoModelLoader_F2.get_clip_vision()
-            clip_vision_output = self.encode_image(clip_vision, start_image)
+            clip_vision_output = self.encode_image(clip_vision, args.start_image)
             clip_vision.model.to(offload_device)
             clear_cuda_cache()
             
-            if fun_inpaint and end_image is not None:
-                concat_latent_image, concat_mask = self.encode_wan_fun_inpaint(width, height, config.frames, empty_latent["samples"], vae, start_image, end_image)
+            if args.fun_inpaint and args.end_image is not None:
+                concat_latent_image, concat_mask = self.encode_wan_fun_inpaint(args.width, args.height, config.frames, empty_latent["samples"], vae, args.start_image, args.end_image)
             else:
-                concat_latent_image, concat_mask = self.encode_image_to_video(width, height, config.frames, empty_latent["samples"], vae, start_image)
+                concat_latent_image, concat_mask = self.encode_image_to_video(args.width, args.height, config.frames, empty_latent["samples"], vae, args.start_image)
 
             vae.first_stage_model.to(offload_device)
             clear_cuda_cache()
@@ -719,62 +755,62 @@ class WanVideoSampler_F2:
         latent_image = empty_latent["samples"]
         latent = empty_latent.copy()
 
-        latent_image = comfy.sample.fix_empty_latent_channels(model, latent_image)
+        latent_image = comfy.sample.fix_empty_latent_channels(args.model, latent_image)
 
         noise_mask = None
         if "noise_mask" in latent:
             noise_mask = latent["noise_mask"]
 
-        full_sigmas = comfy.samplers.calculate_sigmas(model.get_model_object("model_sampling"), scheduler, config.sampling_steps).cpu()
-        sampler = comfy.samplers.sampler_object(sampler)
+        full_sigmas = comfy.samplers.calculate_sigmas(args.model.get_model_object("model_sampling"), args.scheduler, config.sampling_steps).cpu()
+        sampler = comfy.samplers.sampler_object(args.sampler)
 
         x0_output = {}
-        previewer = get_previewer(WanVideoModelLoader_F2.get_taehv(), model.load_device, preview_resolution)
+        previewer = get_previewer(WanVideoModelLoader_F2.get_taehv(), args.model.load_device, args.preview_resolution)
         pbar = comfy.utils.ProgressBar(config.sampling_steps)
         preview_callback = prepare_callback(previewer, pbar, x0_output)
 
         def get_random_noise():
-            return Noise_RandomNoise(seed=seed).generate_noise(latent)
+            return Noise_RandomNoise(seed=args.seed).generate_noise(latent)
         
         def get_empty_noise():
             return Noise_EmptyNoise().generate_noise(latent)
         
         def get_cfg_guider2():
-            guider = CFGGuider2(model)
+            guider = CFGGuider2(args.model)
             guider.set_conds(positive, negative)
             guider.set_cfg(config.guidance_scale, config.guidance_percent)
             return guider
         
         guider = get_cfg_guider2()
         
-        samples = guider.sample(get_random_noise(), latent_image, sampler, full_sigmas, denoise_mask=noise_mask, callback=preview_callback, disable_pbar=False, seed=seed)
+        samples = guider.sample(get_random_noise(), latent_image, sampler, full_sigmas, denoise_mask=noise_mask, callback=preview_callback, disable_pbar=False, seed=args.seed)
 
-        if denoised_output:
+        if args.denoised_output:
             print("denoising...")
 
             steps = 5
             pbar = comfy.utils.ProgressBar(steps)
             preview_callback = prepare_callback(previewer, pbar, x0_output)
 
-            sampler = comfy.samplers.KSampler(model, steps=steps, device=model.load_device, sampler="dpmpp_2m", scheduler=scheduler, denoise=0.49, model_options=model.model_options)
-            samples = sampler.sample(get_random_noise(), positive, negative, cfg=1.0, latent_image=latent_image, force_full_denoise=True, denoise_mask=noise_mask, callback=preview_callback, seed=seed)
+            sampler = comfy.samplers.KSampler(args.model, steps=steps, device=args.model.load_device, sampler="dpmpp_2m", scheduler=args.scheduler, denoise=0.49, model_options=args.model.model_options)
+            samples = sampler.sample(get_random_noise(), positive, negative, cfg=1.0, latent_image=latent_image, force_full_denoise=True, denoise_mask=noise_mask, callback=preview_callback, seed=args.seed)
             
-        model.model.to(offload_device)
+        args.model.model.to(offload_device)
         clear_cuda_cache()
 
         out = latent.copy()
         out["samples"] = samples
         if "x0" in x0_output:
             out_denoised = latent.copy()
-            out_denoised["samples"] = model.model.process_latent_out(x0_output["x0"].cpu())
+            out_denoised["samples"] = args.model.model.process_latent_out(x0_output["x0"].cpu())
             print("x0 is valid")
         else:
             out_denoised = out
             print("x0 is not valid")
 
-        if vae_decode_type == "tiled":
+        if args.vae_decode_type == "tiled":
             print("processing in tiled vae decode...")
-            images = VAEDecodeTiled.decode(None, vae, samples=out_denoised, tile_size=vae_tile_size)[0]
+            images = VAEDecodeTiled.decode(None, vae, samples=out_denoised, tile_size=args.vae_tile_size)[0]
         else:
             print("processing in default vae decode...")
             images = VAEDecode.decode(None, vae, samples=out_denoised)[0]
@@ -782,11 +818,11 @@ class WanVideoSampler_F2:
         vae.first_stage_model.to(offload_device)
         clear_cuda_cache()
 
-        if unload_all_models:
+        if args.unload_all_models:
             comfy.model_management.unload_all_models()
             comfy.model_management.soft_empty_cache()
 
-        return (images, )
+        return images
     
 class WanVideoEnhancer_F2:
     @classmethod
