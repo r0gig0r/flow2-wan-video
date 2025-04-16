@@ -16,4 +16,4 @@ class Config:
     skip_layer: str
     skip_start_percent: float
     skip_end_percent: float
-    iteration_count: int
+    extend_video_count: int

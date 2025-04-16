@@ -326,7 +326,7 @@ class WanVideoConfigure_F2:
                 "skip_layer": (("disabled", "9", "10", "9, 10"), {"advanced": True}),
                 "skip_start_percent": ("FLOAT", {"default": 0.1, "min": 0.00, "max": 1.00, "step":0.01, "round": 0.0, "advanced": True}),
                 "skip_end_percent": ("FLOAT", {"default": 0.9, "min": 0.00, "max": 1.00, "step":0.01, "round": 0.01, "advanced": True}),
-                "iteration_count": ("INT", {"default": 1, "min": 1, "max": 10, "tooltip": "If the value is 2 or more, the last image is used."}),
+                "extend_video_count": ("INT", {"default": 1, "min": 1, "max": 10, "tooltip": "If this value is 2 or greater, the video will be extended using the last image."}),
             },
         }
 
@@ -352,7 +352,7 @@ class WanVideoConfigure_F2:
             skip_layer,
             skip_start_percent,
             skip_end_percent,
-            iteration_count,
+            extend_video_count,
         ):
         
         WanVideoConfigure_F2.config = Config(
@@ -370,7 +370,7 @@ class WanVideoConfigure_F2:
             skip_layer=skip_layer,
             skip_start_percent=skip_start_percent,
             skip_end_percent=skip_end_percent,
-            iteration_count=iteration_count,
+            extend_video_count=extend_video_count,
         )
 
         return (True, width, height, )
@@ -700,12 +700,12 @@ class WanVideoSampler_F2:
         args["image_to_video"] = image_to_video
         args["fun_inpaint"] = fun_inpaint
 
-        if image_to_video and config.iteration_count > 1:
+        if image_to_video and config.extend_video_count > 1:
 
-            new_images = torch.empty(config.iteration_count * 49, height, width, 3)
+            new_images = torch.empty(config.extend_video_count * 49, height, width, 3)
 
             images = None
-            for i in range(config.iteration_count):
+            for i in range(config.extend_video_count):
                 if images is not None:
                     args["start_image"] = args["end_image"] if args["end_image"] is not None else images[-1:]
                     args["end_image"] = None
