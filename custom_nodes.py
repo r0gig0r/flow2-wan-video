@@ -990,7 +990,7 @@ class ResizeImage_F2:
                 "width": ("NUMBER", ),
                 "height": ("NUMBER", ),
                 "image": (sorted(files), {"image_upload": True}),
-                "keep_proportion": (("none", "shortest", "longest"), ),
+                "scale_side": (("none", "shortest", "longest"), ),
                 "image_quality": ("INT", {"default": 90, "min": 0, "max": 100}),
                 "saturate": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 2.0, "step":0.1}),
                 "blur": ("FLOAT", {"default": 0.00, "min": 0.00, "max": 5.00, "step": 0.01}),
@@ -1011,7 +1011,7 @@ class ResizeImage_F2:
             width,
             height,
             image,
-            keep_proportion,
+            scale_side,
             image_quality,
             saturate,
             blur,
@@ -1021,24 +1021,24 @@ class ResizeImage_F2:
         ):
         image = self.load_image(image=image)[0]
 
-        if keep_proportion != "none":
+        if scale_side != "none":
             _, H, W, _ = image.shape
 
-            if keep_proportion == "shortest":
+            if scale_side == "shortest":
                 if W <= H:
-                    height = height
-                    width = round(height * (W / H))
-                elif W >= H:
                     width = width
                     height = round(width * (H / W))
+                elif W >= H:
+                    height = height
+                    width = round(height * (W / H))
 
-            elif keep_proportion == "longest":
+            elif scale_side == "longest":
                 if W <= H:
-                    width = width
-                    height = round(width * (H / W))
-                elif W >= H:
                     height = height
                     width = round(height * (W / H))
+                elif W >= H:
+                    width = width
+                    height = round(width * (H / W))
 
             width = width - (width % 16)
             height = height - (height % 16)
