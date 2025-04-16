@@ -996,7 +996,7 @@ class ResizeImage_F2:
                 "blur": ("FLOAT", {"default": 0.00, "min": 0.00, "max": 5.00, "step": 0.01}),
                 "noise_strength": ("FLOAT", {"default": 0.015, "min": 0.000, "max": 0.100, "step":0.001, "round": 0.001}),
                 "noise_seed": ("INT", {"default": 1234, "min": 0, "max": 0xffffffffffffffff, "control_after_generate": False}),
-                "stop_iteration": ("BOOLEAN", {"default": False}),
+                "stop": ("BOOLEAN", {"default": False}),
             },
         }
     
@@ -1017,7 +1017,7 @@ class ResizeImage_F2:
             blur,
             noise_strength,
             noise_seed,
-            stop_iteration
+            stop
         ):
         image = self.load_image(image=image)[0]
 
@@ -1055,7 +1055,7 @@ class ResizeImage_F2:
         out = self.save_images(image, blur=blur, quality=image_quality, saturate=saturate)
         image = self.load_image(out["ui"]["images"][0]["filename"], folder_paths.get_temp_directory())[0]
 
-        if stop_iteration:
+        if stop:
             from comfy_execution.graph import ExecutionBlocker
             result = ExecutionBlocker(None), ExecutionBlocker(None), ExecutionBlocker(None), 
         else:
