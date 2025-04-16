@@ -326,7 +326,7 @@ class WanVideoConfigure_F2:
                 "skip_layer": (("disabled", "9", "10", "9, 10"), {"advanced": True}),
                 "skip_start_percent": ("FLOAT", {"default": 0.1, "min": 0.00, "max": 1.00, "step":0.01, "round": 0.0, "advanced": True}),
                 "skip_end_percent": ("FLOAT", {"default": 0.9, "min": 0.00, "max": 1.00, "step":0.01, "round": 0.01, "advanced": True}),
-                "extend_video_count": ("INT", {"default": 1, "min": 1, "max": 10, "tooltip": "If this value is 2 or greater, the video will be extended using the last image."}),
+                "extend_video_count": ("INT", {"default": 1, "min": 1, "max": 10, "tooltip": "If this value is 2 or greater, the video will be extended using the last image.", "advanced": True}),
             },
         }
 
