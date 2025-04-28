@@ -702,7 +702,7 @@ class WanVideoSampler_F2:
 
         if image_to_video and config.extend_video_count > 1:
 
-            new_images = torch.empty(config.extend_video_count * 49, height, width, 3)
+            new_images = torch.empty(config.extend_video_count * config.frames, height, width, 3)
 
             images = None
             for i in range(config.extend_video_count):
@@ -711,7 +711,7 @@ class WanVideoSampler_F2:
                     args["end_image"] = None
 
                 images = self.sampling(**args)
-                new_images[i * 49:(i + 1) * 49] = images
+                new_images[i * config.frames:(i + 1) * config.frames] = images
         else:
             new_images = self.sampling(**args)
         
