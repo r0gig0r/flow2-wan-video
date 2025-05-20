@@ -182,6 +182,7 @@
       "widgets_values": [
         "triton",
         "retention",
+        0.2,
         "disabled"
       ],
       "color": "#323",

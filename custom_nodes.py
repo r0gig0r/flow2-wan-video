@@ -388,6 +388,15 @@ class WanVideoModelPatcher_F2:
                 "patch": ("PATCH", ),
                 "sage_attention": (("disabled", "auto", "triton", ), ),
                 "teacache": (("disabled", "normal", "retention", ), ),
+                "teacache_rel_l1_thresh": ("FLOAT", {
+                    "default": 0.2,
+                    "min": 0.0,
+                    "max": 1.0,
+                    "step": 0.01,
+                    "round": 0.01,
+                    "tooltip": "Override TeaCache threshold; 0 uses default.",
+                    "advanced": True,
+                }),
                 "compile_model": (("disabled", "default", ), ),
             }
         }
@@ -405,6 +414,7 @@ class WanVideoModelPatcher_F2:
             sage_attention,
             teacache,
             compile_model,
+            teacache_rel_l1_thresh,
         ):
 
         if not patch:
@@ -442,7 +452,13 @@ class WanVideoModelPatcher_F2:
             model = patch_cfg_zero_star(model, int(config.cfg_zero_steps))
 
         if teacache != "disabled":
-            model = patch_teacache(model, WanVideoModelLoader_F2.loaded_model[0], teacache)
+            rel_thresh = None if teacache_rel_l1_thresh <= 0 else teacache_rel_l1_thresh
+            model = patch_teacache(
+                model,
+                WanVideoModelLoader_F2.loaded_model[0],
+                teacache,
+                rel_thresh
+            )
 
         if compile_model != "disabled":
             model = torch_compile_model(model, compile_model)

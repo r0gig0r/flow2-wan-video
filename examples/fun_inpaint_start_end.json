@@ -544,6 +544,7 @@
       "widgets_values": [
         "disabled",
         "disabled",
+        0.2,
         "disabled"
       ],
       "color": "#323",
