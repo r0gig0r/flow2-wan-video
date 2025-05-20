@@ -79,9 +79,8 @@ def _generic_frame_loop(
             out_len += 1
 
         number_of_frames_processed_since_last_cleared_cuda_cache += 1
-        # Try to avoid a memory overflow by clearing cuda cache regularly
+        # High VRAM mode keeps cache for performance
         if number_of_frames_processed_since_last_cleared_cuda_cache >= clear_cache_after_n_frames:
-            mm.soft_empty_cache()
             number_of_frames_processed_since_last_cleared_cuda_cache = 0
         
         gc.collect()
@@ -90,8 +89,7 @@ def _generic_frame_loop(
     output_frames[out_len] = frames[-1:]
     out_len += 1
 
-    # clear cache for courtesy
-    mm.soft_empty_cache()
+    # keep cache in high VRAM mode
 
     return output_frames[:out_len]
 

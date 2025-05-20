@@ -85,7 +85,7 @@ TAEHV_NAME = "taew2_1.safetensors"
 
 
 intermediate_device = mm.intermediate_device()
-offload_device = mm.unet_offload_device()
+offload_device = mm.get_torch_device()  # keep everything on the main device
 torch_device = mm.get_torch_device()
 
 def convert_filename_comfyorg(model_type, model_name):
@@ -450,11 +450,8 @@ class WanVideoModelPatcher_F2:
         return (model, )
     
 def clear_cuda_cache():
-    gc.collect()
-
-    if torch.cuda.is_available():
-        torch.cuda.empty_cache()
-        torch.cuda.ipc_collect()
+    """Disabled VRAM clearing for high performance."""
+    pass
 
 def concat_cond(self, **kwargs):
     noise = kwargs.get("noise", None)
@@ -579,7 +576,6 @@ class WanVideoSampler_F2:
                 "vae_decode_type": (("default", "tiled"), {"advanced": True}),
                 "vae_tile_size": ("INT", {"default": 192, "min": 64, "max": 4096, "step": 32, "advanced": True}),
                 "preview_resolution": ("INT", {"default": 256, "min": 64, "max": 1280, "step": 32, "advanced": True}),
-                "unload_all_models": ("BOOLEAN", {"advanced": True}),
             },
             "optional":{
                 "start_image": ("IMAGE", ),
@@ -660,7 +656,6 @@ class WanVideoSampler_F2:
             vae_decode_type,
             vae_tile_size,
             preview_resolution,
-            unload_all_models,
             start_image=None,
             end_image=None,
         ):
@@ -674,7 +669,6 @@ class WanVideoSampler_F2:
             "vae_decode_type": vae_decode_type,
             "vae_tile_size": vae_tile_size,
             "preview_resolution": preview_resolution,
-            "unload_all_models": unload_all_models,
             "start_image": start_image,
             "end_image": end_image,
         }
@@ -817,10 +811,6 @@ class WanVideoSampler_F2:
 
         vae.first_stage_model.to(offload_device)
         clear_cuda_cache()
-
-        if args.unload_all_models:
-            comfy.model_management.unload_all_models()
-            comfy.model_management.soft_empty_cache()
 
         return images
     
