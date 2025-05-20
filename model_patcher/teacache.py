@@ -26,7 +26,7 @@ WEIGHT_480P = -4.353462645667605e-05
 
 offload_device = mm.unet_offload_device()
 
-def patch_teacache(model, model_name, mode):
+def patch_teacache(model, model_name, mode, rel_l1_thresh=None):
     model_type = None
     if all(k in model_name for k in ("i2v", "14b", "720p")):
         model_type = "i2v_720p_14B"
@@ -47,9 +47,13 @@ def patch_teacache(model, model_name, mode):
     new_model = model.clone()
     
     coefficients = SUPPORTED_MODELS_COEFFICIENTS[mode][model_type][0]
-    rel_l1_thresh = SUPPORTED_MODELS_COEFFICIENTS[mode][model_type][1]
+    default_rel_l1_thresh = SUPPORTED_MODELS_COEFFICIENTS[mode][model_type][1]
+    if rel_l1_thresh is None or rel_l1_thresh <= 0:
+        rel_l1_thresh = default_rel_l1_thresh
 
-    print(f"patched teacache mode: {mode}, model_type: {model_type}, rel_l1_thresh: {rel_l1_thresh}")
+    print(
+        f"patched teacache mode: {mode}, model_type: {model_type}, rel_l1_thresh: {rel_l1_thresh}"
+    )
 
     if 'transformer_options' not in new_model.model_options:
         new_model.model_options['transformer_options'] = {}    
