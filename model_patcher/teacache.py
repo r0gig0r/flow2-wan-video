@@ -105,6 +105,7 @@ def teacache_wanmodel_forward(
         context,
         clip_fea=None,
         freqs=None,
+        control=None,
         transformer_options={},
         **kwargs,
     ):
