@@ -180,6 +180,9 @@ class WanVideoModelLoader_F2:
                 "lora_2": (lora_files, {"advanced": True}), "lora_2_strength": ("FLOAT", {"default": 1.00, "min": -10.00, "max": 10.00, "step":0.01, "round": 0.01, "advanced": True}),
                 "lora_3": (lora_files, {"advanced": True}), "lora_3_strength": ("FLOAT", {"default": 1.00, "min": -10.00, "max": 10.00, "step":0.01, "round": 0.01, "advanced": True}),
             },
+            "optional":{
+                "clip": ("CLIP", ),
+            },
         }
        
     RETURN_TYPES = ("MODEL", )
@@ -261,6 +264,7 @@ class WanVideoModelLoader_F2:
             lora_1, lora_1_strength,
             lora_2, lora_2_strength,
             lora_3, lora_3_strength,
+            clip=None,
         ):
 
         if cls.loaded_model is None or cls.loaded_model[0] != unet_name:
@@ -293,8 +297,10 @@ class WanVideoModelLoader_F2:
             cls.loaded_model = (unet_name, model)
 
         model = cls.loaded_model[-1]
-
-        WanVideoModelLoader_F2.get_clip()
+        if clip is not None:
+            cls.encoder_models["clip"] = clip
+        else:
+            WanVideoModelLoader_F2.get_clip()
         WanVideoModelLoader_F2.get_clip_vision()
         WanVideoModelLoader_F2.get_vae()
         WanVideoModelLoader_F2.get_taehv()
