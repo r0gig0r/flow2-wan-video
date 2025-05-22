@@ -87,6 +87,12 @@ TAEHV_NAME = "taew2_1.safetensors"
 intermediate_device = mm.intermediate_device()
 offload_device = mm.get_torch_device()  # keep everything on the main device
 torch_device = mm.get_torch_device()
+# second cuda device if available, else fall back to the main one
+second_torch_device = (
+    torch.device("cuda:1")
+    if torch.cuda.is_available() and torch.cuda.device_count() > 1
+    else torch_device
+)
 
 def convert_filename_comfyorg(model_type, model_name):
     return f"split_files/{model_type}/{model_name}"
@@ -310,7 +316,60 @@ class WanVideoModelLoader_F2:
         model = cls.apply_lora_cached(model, "lora_3", lora_3, lora_3_strength)
 
         return (model, )
-    
+
+
+class WanI2VModelLoader_F2(WanVideoModelLoader_F2):
+    """Load an image-to-video model on the secondary CUDA device when present."""
+
+    loaded_model = None
+
+    @classmethod
+    def INPUT_TYPES(cls):
+        lora_files = ["disabled"] + folder_paths.get_filename_list("loras")
+        i2v_models = [m for m in MODEL_LIST if "i2v" in m.lower()]
+        return {
+            "required": {
+                "unet_name": (i2v_models, ),
+                "lora_1": (lora_files, {"advanced": True}), "lora_1_strength": ("FLOAT", {"default": 1.00, "min": -10.00, "max": 10.00, "step":0.01, "round": 0.01, "advanced": True}),
+                "lora_2": (lora_files, {"advanced": True}), "lora_2_strength": ("FLOAT", {"default": 1.00, "min": -10.00, "max": 10.00, "step":0.01, "round": 0.01, "advanced": True}),
+                "lora_3": (lora_files, {"advanced": True}), "lora_3_strength": ("FLOAT", {"default": 1.00, "min": -10.00, "max": 10.00, "step":0.01, "round": 0.01, "advanced": True}),
+            },
+            "optional": {
+                "clip": ("CLIP", ),
+            },
+        }
+
+    RETURN_TYPES = ("MODEL", )
+    FUNCTION = "load"
+
+    CATEGORY = "Flow2/Wan 2.1"
+
+    @classmethod
+    def load(
+            cls,
+            unet_name,
+            lora_1, lora_1_strength,
+            lora_2, lora_2_strength,
+            lora_3, lora_3_strength,
+            clip=None,
+        ):
+
+        model = super().load(
+            unet_name,
+            lora_1, lora_1_strength,
+            lora_2, lora_2_strength,
+            lora_3, lora_3_strength,
+            clip,
+        )[0]
+
+        model.load_device = second_torch_device
+        model.model.to(second_torch_device)
+
+        cls.loaded_model = (unet_name, model)
+
+        return (model, )
+
+
 class WanVideoConfigure_F2:
     config = None
 
@@ -602,6 +661,7 @@ class WanVideoSampler_F2:
             "optional":{
                 "start_image": ("IMAGE", ),
                 "end_image": ("IMAGE", ),
+                "i2v_model": ("MODEL", ),
             },
         }
 
@@ -680,6 +740,7 @@ class WanVideoSampler_F2:
             preview_resolution,
             start_image=None,
             end_image=None,
+            i2v_model=None,
         ):
 
         args = {
@@ -693,6 +754,7 @@ class WanVideoSampler_F2:
             "preview_resolution": preview_resolution,
             "start_image": start_image,
             "end_image": end_image,
+            "i2v_model": i2v_model,
         }
 
         config = WanVideoConfigure_F2.config
@@ -716,17 +778,21 @@ class WanVideoSampler_F2:
         args["image_to_video"] = image_to_video
         args["fun_inpaint"] = fun_inpaint
 
-        if image_to_video and config.extend_video_count > 1:
+        if config.extend_video_count > 1:
 
             new_images = torch.empty(config.extend_video_count * config.frames, height, width, 3)
 
             images = None
             for i in range(config.extend_video_count):
-                if images is not None:
-                    args["start_image"] = args["end_image"] if args["end_image"] is not None else images[-1:]
-                    args["end_image"] = None
+                iter_args = args.copy()
+                if i > 0:
+                    iter_args["image_to_video"] = True
+                    iter_args["start_image"] = iter_args["end_image"] if iter_args["end_image"] is not None else images[-1:]
+                    iter_args["end_image"] = None
+                    if iter_args.get("i2v_model") is not None:
+                        iter_args["model"] = iter_args["i2v_model"]
 
-                images = self.sampling(**args)
+                images = self.sampling(**iter_args)
                 new_images[i * config.frames:(i + 1) * config.frames] = images
         else:
             new_images = self.sampling(**args)
@@ -811,7 +877,7 @@ class WanVideoSampler_F2:
             sampler = comfy.samplers.KSampler(args.model, steps=steps, device=args.model.load_device, sampler="dpmpp_2m", scheduler=args.scheduler, denoise=0.49, model_options=args.model.model_options)
             samples = sampler.sample(get_random_noise(), positive, negative, cfg=1.0, latent_image=latent_image, force_full_denoise=True, denoise_mask=noise_mask, callback=preview_callback, seed=args.seed)
             
-        args.model.model.to(offload_device)
+        args.model.model.to(args.model.load_device)
         clear_cuda_cache()
 
         out = latent.copy()
