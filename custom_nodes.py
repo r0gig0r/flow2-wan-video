@@ -1227,3 +1227,72 @@ class ResizeImage_F2:
             return "Invalid image file: {}".format(image)
 
         return True
+
+
+class AIPromptRephrasing:
+    @classmethod
+    def fetch_models(cls, url):
+        import json
+        import urllib.request
+
+        endpoint = url.rstrip("/") + "/models"
+        try:
+            with urllib.request.urlopen(endpoint) as resp:
+                resp_data = json.load(resp)
+                models = [m.get("id") or m.get("name") for m in resp_data.get("data", [])]
+                models = [m for m in models if m]
+        except Exception as e:
+            print(f"Failed to fetch models from {endpoint}: {e}")
+            models = ["gpt-3.5-turbo"]
+
+        if not models:
+            models = ["gpt-3.5-turbo"]
+
+        return models
+
+    @classmethod
+    def INPUT_TYPES(s):
+        default_url = "http://localhost:1234/v1"
+        models = s.fetch_models(default_url)
+        return {
+            "required": {
+                "instructions": ("STRING", {"multiline": True}),
+                "example_prompt": ("STRING", {"multiline": True}),
+                "url": ("STRING", {"default": default_url}),
+                "model": (models, ),
+            }
+        }
+
+    RETURN_TYPES = ("STRING",)
+    RETURN_NAMES = ("new_prompt",)
+    FUNCTION = "rephrase"
+
+    CATEGORY = "Flow2/Wan 2.1"
+
+    def rephrase(self, instructions, example_prompt, url, model):
+        import json
+        import urllib.request
+
+        endpoint = url.rstrip("/") + "/chat/completions"
+        payload = {
+            "model": model,
+            "messages": [
+                {"role": "system", "content": instructions},
+                {"role": "user", "content": example_prompt},
+            ],
+        }
+
+        data = json.dumps(payload).encode("utf-8")
+        req = urllib.request.Request(
+            endpoint, data=data, headers={"Content-Type": "application/json"}
+        )
+
+        try:
+            with urllib.request.urlopen(req) as resp:
+                resp_data = json.load(resp)
+                new_prompt = resp_data["choices"][0]["message"]["content"]
+        except Exception as e:
+            print(f"Failed to rephrase prompt: {e}")
+            new_prompt = ""
+
+        return (new_prompt,)

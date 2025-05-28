@@ -12,6 +12,7 @@ NODE_CLASS_MAPPINGS = {
     "WanVideoSampler_F2"            : WanVideoSampler_F2,
     "WanVideoEnhancer_F2"           : WanVideoEnhancer_F2,
     "ResizeImage_F2"                : ResizeImage_F2,
+    "AIPromptRephrasing"           : AIPromptRephrasing,
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
@@ -22,4 +23,5 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "WanVideoSampler_F2"            : "Wan Sampler",
     "WanVideoEnhancer_F2"           : "Wan Frame Enhancer",
     "ResizeImage_F2"                : "Resize Image",
+    "AIPromptRephrasing"           : "AI Prompt Rephrasing",
 }
