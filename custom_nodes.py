@@ -1240,13 +1240,12 @@ class ResizeImage_F2:
 
 class AIPromptRephrasing:
     f"""flow2-wan-video node version {NODE_VERSION}"""
-    MODELS_BY_URL = {}
-
+    _models_cache: dict[str, list] = {}
+    _cached_models: list[str] = ["gpt-3.5-turbo"]
     @classmethod
     def fetch_models(cls, url):
         import json
         import urllib.request
-
         endpoint = url.rstrip("/") + "/models"
         try:
             with urllib.request.urlopen(endpoint) as resp:
@@ -1259,19 +1258,22 @@ class AIPromptRephrasing:
 
         if not models:
             models = ["gpt-3.5-turbo"]
-
-        cls.MODELS_BY_URL[url] = models
+        cls._models_cache[url] = models
+        cls._cached_models = models
         return models
 
     @classmethod
     def INPUT_TYPES(s):
-        default_url = "http://localhost:1234/v1"
+        default_url = "http://192.168.20.104:1234/v1"
+        models = s._models_cache.get(default_url)
+        if models is None:
+            models = s.fetch_models(default_url)
         return {
             "required": {
                 "instructions": ("STRING", {"multiline": True}),
                 "example_prompt": ("STRING", {"multiline": True}),
                 "url": ("STRING", {"default": default_url}),
-                "model": ("STRING", {"default": "gpt-3.5-turbo"}),
+                "model": (models, ),
             }
         }
 
@@ -1284,6 +1286,9 @@ class AIPromptRephrasing:
     def rephrase(self, instructions, example_prompt, url, model):
         import json
         import urllib.request
+        models = self.fetch_models(url)
+        if model not in models:
+            model = models[0]
 
         # refresh available models for the provided URL
         models = self.MODELS_BY_URL.get(url)
