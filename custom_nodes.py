@@ -1246,7 +1246,6 @@ class AIPromptRephrasing:
     def fetch_models(cls, url):
         import json
         import urllib.request
-
         endpoint = url.rstrip("/") + "/models"
         try:
             with urllib.request.urlopen(endpoint) as resp:
@@ -1259,14 +1258,13 @@ class AIPromptRephrasing:
 
         if not models:
             models = ["gpt-3.5-turbo"]
-
         cls._models_cache[url] = models
         cls._cached_models = models
         return models
 
     @classmethod
     def INPUT_TYPES(s):
-        default_url = "http://localhost:1234/v1"
+        default_url = "http://192.168.20.104:1234/v1"
         models = s._models_cache.get(default_url)
         if models is None:
             models = s.fetch_models(default_url)
@@ -1291,6 +1289,17 @@ class AIPromptRephrasing:
         models = self.fetch_models(url)
         if model not in models:
             model = models[0]
+
+        # refresh available models for the provided URL
+        models = self.MODELS_BY_URL.get(url)
+        if models is None:
+            models = self.fetch_models(url)
+        if model not in models:
+            if models:
+                print(
+                    f"Model '{model}' not found at {url}, using '{models[0]}'"
+                )
+                model = models[0]
 
         endpoint = url.rstrip("/") + "/chat/completions"
         payload = {
