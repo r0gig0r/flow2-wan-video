@@ -1291,7 +1291,7 @@ class AIPromptRephrasing:
             model = models[0]
 
         # refresh available models for the provided URL
-        models = self.MODELS_BY_URL.get(url)
+        models = self._models_cache.get(url)
         if models is None:
             models = self.fetch_models(url)
         if model not in models:
