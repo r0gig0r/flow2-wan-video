@@ -35,6 +35,9 @@ REPO_ID_COMFYORG = "Comfy-Org/Wan_2.1_ComfyUI_repackaged"
 REPO_ID_KIJAI = "Kijai/WanVideo_comfy"
 REPO_ID_MODELS = {}
 
+# Current version of the flow2-wan-video custom nodes
+NODE_VERSION = "1.2.4"
+
 MODEL_LIST = []
 
 def update_folder_names_and_paths(key, targets=[]):
@@ -160,6 +163,7 @@ def download_huggingface_model(repo_id, file_name, saved_directory):
     return saved_full_path
 
 class WanVideoModelLoader_F2:
+    f"""flow2-wan-video node version {NODE_VERSION}"""
     encoder_models = {
         "clip": None,
         "clip_vision": None,
@@ -319,7 +323,7 @@ class WanVideoModelLoader_F2:
 
 
 class WanI2VModelLoader_F2(WanVideoModelLoader_F2):
-    """Load an image-to-video model on the secondary CUDA device when present."""
+    f"""Load an image-to-video model on the secondary CUDA device when present.\n\nflow2-wan-video node version {NODE_VERSION}"""
 
     loaded_model = None
 
@@ -371,6 +375,7 @@ class WanI2VModelLoader_F2(WanVideoModelLoader_F2):
 
 
 class WanVideoConfigure_F2:
+    f"""flow2-wan-video node version {NODE_VERSION}"""
     config = None
 
     @classmethod
@@ -441,6 +446,7 @@ class WanVideoConfigure_F2:
         return (True, width, height, )
     
 class WanVideoModelPatcher_F2:
+    f"""flow2-wan-video node version {NODE_VERSION}"""
     def __init__(self):
         self.patched_sage = False
         self.patched_order = False
@@ -642,6 +648,7 @@ comfy.model_base.WAN21.concat_cond = concat_cond
 #     return out
 
 class WanVideoSampler_F2:
+    f"""flow2-wan-video node version {NODE_VERSION}"""
     def __init__(self):
         pass
 
@@ -903,6 +910,7 @@ class WanVideoSampler_F2:
         return images
     
 class WanVideoEnhancer_F2:
+    f"""flow2-wan-video node version {NODE_VERSION}"""
     @classmethod
     def INPUT_TYPES(s):
         return {
@@ -1054,6 +1062,7 @@ import hashlib
 import numpy as np
 from PIL import Image, ImageEnhance, ImageFilter, ImageOps, ImageSequence
 class ResizeImage_F2:
+    f"""flow2-wan-video node version {NODE_VERSION}"""
     def __init__(self):
         self.output_dir = folder_paths.get_temp_directory()
         self.type = "temp"
@@ -1230,6 +1239,7 @@ class ResizeImage_F2:
 
 
 class AIPromptRephrasing:
+    f"""flow2-wan-video node version {NODE_VERSION}"""
     @classmethod
     def fetch_models(cls, url):
         import json
