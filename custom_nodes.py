@@ -1240,6 +1240,8 @@ class ResizeImage_F2:
 
 class AIPromptRephrasing:
     f"""flow2-wan-video node version {NODE_VERSION}"""
+    _models_cache: dict[str, list] = {}
+    _cached_models: list[str] = ["gpt-3.5-turbo"]
     @classmethod
     def fetch_models(cls, url):
         import json
@@ -1258,12 +1260,16 @@ class AIPromptRephrasing:
         if not models:
             models = ["gpt-3.5-turbo"]
 
+        cls._models_cache[url] = models
+        cls._cached_models = models
         return models
 
     @classmethod
     def INPUT_TYPES(s):
         default_url = "http://localhost:1234/v1"
-        models = s.fetch_models(default_url)
+        models = s._models_cache.get(default_url)
+        if models is None:
+            models = s.fetch_models(default_url)
         return {
             "required": {
                 "instructions": ("STRING", {"multiline": True}),
@@ -1282,6 +1288,9 @@ class AIPromptRephrasing:
     def rephrase(self, instructions, example_prompt, url, model):
         import json
         import urllib.request
+        models = self.fetch_models(url)
+        if model not in models:
+            model = models[0]
 
         endpoint = url.rstrip("/") + "/chat/completions"
         payload = {
