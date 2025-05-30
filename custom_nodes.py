@@ -1274,6 +1274,7 @@ class AIPromptRephrasing:
                 "example_prompt": ("STRING", {"multiline": True}),
                 "url": ("STRING", {"default": default_url}),
                 "model": (models, ),
+                "seed": ("INT", {"default": 1234, "min": 0, "max": 0xffffffffffffffff}),
             }
         }
 
@@ -1283,7 +1284,7 @@ class AIPromptRephrasing:
 
     CATEGORY = "Flow2/Wan 2.1"
 
-    def rephrase(self, instructions, example_prompt, url, model):
+    def rephrase(self, instructions, example_prompt, url, model, seed):
         import json
         import urllib.request
         models = self.fetch_models(url)
@@ -1308,6 +1309,7 @@ class AIPromptRephrasing:
                 {"role": "system", "content": instructions},
                 {"role": "user", "content": example_prompt},
             ],
+            "seed": seed,
         }
 
         data = json.dumps(payload).encode("utf-8")
